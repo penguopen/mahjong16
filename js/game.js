@@ -30,7 +30,8 @@ class MahjongGame {
       pendingChiCombinations: [], // 等待玩家選擇的吃牌組合
       hasPendingAction: false,     // 是否有吃/碰/槓/胡選項要等玩家選擇
       waitingForPlayerResponse: false, // 是否在等待玩家選擇行動（堵住 nextPlayerTurn）
-      lastDiscardTile: null        // 最近一次別人打的牌（等待玩家決定是否吃/碰/槓/胡）
+      lastDiscardTile: null,        // 最近一次別人打的牌（等待玩家決定是否吃/碰/槓/胡）
+      skipAutoDraw: false          // 下次 nextPlayerTurn 跳過自動摸牌（玩家放棄 pending 動作時設定）
     };
     
     // 圈風與玩家風
@@ -151,6 +152,7 @@ class MahjongGame {
     this.gameState.hasPendingAction = false;
     this.gameState.waitingForPlayerResponse = false;
     this.gameState.lastDiscardTile = null;
+    this.gameState.skipAutoDraw = false;
 
     // 更新 UI
     this.updateUI();
@@ -174,14 +176,18 @@ class MahjongGame {
     if (this.gameState.currentPlayer !== 0) return;
     console.log('[playerDraw] BEFORE: handSize=' + this.engine.playerHands[0].length + ' hasPendingAction=' + this.gameState.hasPendingAction);
 
-    // 如果有pending的吃/碰/槓/胡選項，點摸牌 = 放棄那些選項
+    // 如果有pending的吃/碰/槓/胡選項，點摸牌 = 放棄那些選項（不要多摸！）
     if (this.gameState.hasPendingAction) {
-      console.log('[playerDraw] giving up pending action');
+      console.log('[playerDraw] giving up pending action, NOT drawing extra tile');
       this.gameState.pendingChiCombinations = [];
       this.gameState.hasPendingAction = false;
       this.gameState.waitingForPlayerResponse = false;
       this.gameState.lastDiscardTile = null;
-      this.updateStatus('放棄行動。請摸牌');
+      this.gameState.skipAutoDraw = true; // 標記：下次 nextPlayerTurn 不要自動摸牌
+      this.updateStatus('放棄行動。請等待電腦出牌');
+      // 直接進入下一回合，不要摸牌！
+      this.nextPlayerTurn();
+      return;
     }
 
     const tile = this.engine.drawTile(0);
@@ -501,7 +507,7 @@ class MahjongGame {
    * 下一玩家回合
    */
   nextPlayerTurn() {
-    console.log('[nextPlayerTurn] currentPlayer=' + this.gameState.currentPlayer + ' waitingForPlayerResponse=' + this.gameState.waitingForPlayerResponse + ' hasPendingAction=' + this.gameState.hasPendingAction);
+    console.log('[nextPlayerTurn] currentPlayer=' + this.gameState.currentPlayer + ' waitingForPlayerResponse=' + this.gameState.waitingForPlayerResponse + ' hasPendingAction=' + this.gameState.hasPendingAction + ' skipAutoDraw=' + this.gameState.skipAutoDraw);
     // 如果在等待玩家選擇行動，直接堵住（不透傳）
     if (this.gameState.waitingForPlayerResponse) {
       return;
@@ -533,6 +539,14 @@ class MahjongGame {
         return;
       }
       // 沒有pending選項，正常摸牌
+      // 但如果 skipAutoDraw=true（玩家剛放棄pending動作），跳過這次摸牌
+      if (this.gameState.skipAutoDraw) {
+        console.log('[nextPlayerTurn] skipAutoDraw=true, skipping draw for player 0');
+        this.gameState.skipAutoDraw = false;
+        this.enablePlayerActions();
+        this.updateStatus('請選擇要出的牌');
+        return;
+      }
       const drawnTile = this.engine.drawTile(0);
       if (!drawnTile) {
         this.handleGameOver();
@@ -611,6 +625,7 @@ class MahjongGame {
     this.gameState.waitingForPlayerResponse = false;
     this.gameState.pendingChiCombinations = [];
     this.gameState.lastDiscardTile = null;
+    this.gameState.skipAutoDraw = false;
     this.disablePlayerActions();
     this.ui.btnStart.disabled = false;
     this.updateStatus('遊戲結束！牌牆已空');
