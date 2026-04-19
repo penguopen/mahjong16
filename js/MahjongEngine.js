@@ -327,7 +327,20 @@ class MahjongEngine {
     // 取得所有牌種
     const tiles_list = Object.keys(counts).map(Number).sort((a, b) => a - b);
     
-    // 嘗試找到將牌
+    // === 七對檢查（七對：7組對子） ===
+    let pairCount = 0;
+    let sevenPairPair = null;
+    for (let t of tiles_list) {
+      if (counts[t] >= 2) {
+        pairCount++;
+        sevenPairPair = t;
+      }
+    }
+    if (pairCount === 7) {
+      return { canWin: true, pair: sevenPairPair, isSevenPairs: true };
+    }
+    
+    // === 嘗試找到將牌（5組面子+1對將） ===
     for (let tile of tiles_list) {
       if (counts[tile] >= 2) {
         // 假設這張是將牌
@@ -336,12 +349,12 @@ class MahjongEngine {
         
         // 檢查剩下的牌能否組成4組面子
         if (this.canFormMelds(newCounts)) {
-          return { canWin: true, pair: tile };
+          return { canWin: true, pair: tile, isSevenPairs: false };
         }
       }
     }
     
-    return { canWin: false, pair: null };
+    return { canWin: false, pair: null, isSevenPairs: false };
   }
   
   /**

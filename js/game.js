@@ -237,6 +237,15 @@ class MahjongGame {
     if (this.gameState.currentPlayer !== 0) return;
     if (this.gameState.selectedTileIndex === null) return;
     
+    // 檢查是否自摸胡（手上14張能否胡）
+    const winResult = this.engine.canWin(0);
+    if (winResult.canWin) {
+      // 強制胡牌，不允許出牌
+      const winTile = this.gameState.lastDrawnTile; // 自摸的牌是最後摸的那張
+      this.handleWin(0, winTile, true); // 自摸
+      return;
+    }
+    
     const tile = this.engine.discardTile(0, this.gameState.selectedTileIndex);
     window.audioManager && window.audioManager.playDiscard();
     this.gameState.lastDrawnTile = null;
@@ -489,6 +498,13 @@ class MahjongGame {
           return;
         }
         this.renderHand(playerIndex);
+        
+        // 檢查是否自摸胡（槓後摸牌可能胡）
+        const kongWinResult = this.engine.canWin(playerIndex);
+        if (kongWinResult.canWin) {
+          this.handleWin(playerIndex, newTile, false); // isSelfDraw=false (槓後補牌不視為自摸)
+          return;
+        }
         
         // AI 槓後直接出牌
         const discardDecision = this.engine.makeAIDecision(playerIndex, this.settings.aiLevel);
