@@ -108,7 +108,16 @@ class MahjongGame {
       ai1TilesCount: document.getElementById('ai1TilesCount'),
       ai2TilesCount: document.getElementById('ai2TilesCount'),
       ai3TilesCount: document.getElementById('ai3TilesCount'),
-      playerTilesCount: document.getElementById('playerTilesCount')
+      playerTilesCount: document.getElementById('playerTilesCount'),
+      // Avatar elements for listen badge
+      avatar0: document.getElementById('avatar0'),
+      avatar1: document.getElementById('avatar1'),
+      avatar2: document.getElementById('avatar2'),
+      avatar3: document.getElementById('avatar3'),
+      // AI meld containers
+      ai1Meld: document.getElementById('ai1Meld'),
+      ai2Meld: document.getElementById('ai2Meld'),
+      ai3Meld: document.getElementById('ai3Meld')
     };
   }
   
@@ -725,6 +734,18 @@ class MahjongGame {
     this.renderDiscards();
     this.renderAllMelds();
   }
+
+  /**
+   * 渲染對手（AI）手牌 - 顯示背面牌
+   */
+  renderOpponentHands() {
+    for (let i = 1; i <= 3; i++) {
+      const container = this.ui[`ai${i}Hand`];
+      if (!container) continue;
+      const hand = this.engine.playerHands[i];
+      container.innerHTML = hand.map(() => this.createBackTileHTML()).join('');
+    }
+  }
   
   /**
    * 渲染手牌
@@ -776,8 +797,8 @@ class MahjongGame {
     if (playerIndex === 0) {
       this.ui.meldArea.innerHTML = meldHTML;
     } else {
-      // AI 玩家的副露顯示：找到對應的 opponent-meld div
-      const aiMeldEl = document.getElementById(`ai${playerIndex}Meld`);
+      // AI 玩家的副露顯示：使用快取的元素
+      const aiMeldEl = this.ui[`ai${playerIndex}Meld`];
       if (aiMeldEl) aiMeldEl.innerHTML = meldHTML;
     }
   }
@@ -842,7 +863,7 @@ class MahjongGame {
    * 顯示/隱藏聽牌 badge
    */
   showListenBadge(playerIndex, show) {
-    const avatarEl = document.getElementById(`avatar${playerIndex}`);
+    const avatarEl = this.ui[`avatar${playerIndex}`];
     if (!avatarEl) return;
     const existing = avatarEl.querySelector('.listen-badge');
     if (show && !existing) {
@@ -881,10 +902,10 @@ class MahjongGame {
       this.gameState.selectedTileIndex = index;
     }
     
-    // 更新顯示
+    // 更新顯示 - 使用 'tile-selected' 與 createTileHTML 一致
     this.ui.handTiles.querySelectorAll('.tile').forEach((tileEl, i) => {
       const actualIndex = parseInt(tileEl.dataset.index);
-      tileEl.classList.toggle('selected', actualIndex === this.gameState.selectedTileIndex);
+      tileEl.classList.toggle('tile-selected', actualIndex === this.gameState.selectedTileIndex);
     });
   }
   
