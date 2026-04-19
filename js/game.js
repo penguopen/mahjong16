@@ -126,6 +126,7 @@ class MahjongGame {
    * 開始遊戲
    */
   startGame() {
+    console.log('[startGame] called');
     // 如果遊戲已在進行中，先彈出確認
     if (this.gameState.isPlaying) {
       if (!confirm('遊戲仍在進行中！確定要重新開始嗎？')) return;
@@ -171,17 +172,20 @@ class MahjongGame {
    */
   playerDraw() {
     if (this.gameState.currentPlayer !== 0) return;
-    
+    console.log('[playerDraw] BEFORE: handSize=' + this.engine.playerHands[0].length + ' hasPendingAction=' + this.gameState.hasPendingAction);
+
     // 如果有pending的吃/碰/槓/胡選項，點摸牌 = 放棄那些選項
     if (this.gameState.hasPendingAction) {
+      console.log('[playerDraw] giving up pending action');
       this.gameState.pendingChiCombinations = [];
       this.gameState.hasPendingAction = false;
       this.gameState.waitingForPlayerResponse = false;
       this.gameState.lastDiscardTile = null;
       this.updateStatus('放棄行動。請摸牌');
     }
-    
+
     const tile = this.engine.drawTile(0);
+    console.log('[playerDraw] AFTER drawTile: handSize=' + this.engine.playerHands[0].length + ' drawnTile=' + tile);
     if (!tile) {
       this.handleGameOver();
       return;
@@ -230,11 +234,13 @@ class MahjongGame {
    */
   playerPon() {
     if (this.gameState.currentPlayer !== 0) return;
-    
+    console.log('[playerPon] BEFORE: handSize=' + this.engine.playerHands[0].length);
+
     const lastDiscard = this.gameState.lastDiscardTile;
     if (!lastDiscard) return;
-    
+
     if (this.engine.doPeng(0, lastDiscard.tile)) {
+      console.log('[playerPon] AFTER doPeng: handSize=' + this.engine.playerHands[0].length);
       // 清除pending狀態
       this.gameState.pendingChiCombinations = [];
       this.gameState.hasPendingAction = false;
@@ -257,17 +263,18 @@ class MahjongGame {
   playerChi() {
     if (this.gameState.currentPlayer !== 0) return;
     if (this.gameState.pendingChiCombinations.length === 0) return;
-    
+    console.log('[playerChi] BEFORE: handSize=' + this.engine.playerHands[0].length + ' pendingChi=' + this.gameState.pendingChiCombinations.length);
+
     const combos = this.gameState.pendingChiCombinations;
     const lastDiscard = this.gameState.lastDiscardTile;
     if (!lastDiscard) return;
-    
+
     // 只有一種吃法時直接執行
     if (combos.length === 1) {
       this.executeChi(combos[0], lastDiscard.tile);
       return;
     }
-    
+
     // 多種吃法：讓玩家選擇
     const names = combos.map(([tileA, tileB]) => {
       const suit = this.engine.getSuit(tileA);
@@ -278,9 +285,9 @@ class MahjongGame {
       const suitChar = suit === 'wan' ? '萬' : suit === 'tong' ? '筒' : '條';
       return `${num1}${suitChar}${num2}${suitChar}吃${discardNum}${suitChar}`;
     });
-    
+
     const choice = prompt('請選擇吃牌方式：\n' + names.map((n, i) => `${i + 1}. ${n}`).join('\n') + '\n（直接確定使用第1個選項）');
-    
+
     if (!choice) {
       // 取消 = 放棄吃
       this.giveUpAction();
@@ -299,7 +306,9 @@ class MahjongGame {
    * 執行吃牌
    */
   executeChi([tileA, tileB], discardTile) {
+    console.log('[executeChi] BEFORE: handSize=' + this.engine.playerHands[0].length + ' tiles=' + tileA + ',' + discardTile + ',' + tileB);
     const success = this.engine.doChi(0, discardTile, tileA, tileB);
+    console.log('[executeChi] AFTER doChi: handSize=' + this.engine.playerHands[0].length + ' success=' + success);
     if (!success) return;
     
     // 清除pending狀態
@@ -452,6 +461,7 @@ class MahjongGame {
   notifyOtherPlayers(tile, fromPlayer) {
     // 儲存最後打的牌（提供給玩家）
     this.gameState.lastDiscardTile = tile;
+    console.log('[notifyOtherPlayers] tile=' + tile + ' fromPlayer=' + fromPlayer + ' nextPlayer=0 hasPendingAction will be set');
     
     // 檢查是否有玩家可以碰、槓、胡
     for (let i = 1; i <= 3; i++) {
@@ -491,6 +501,7 @@ class MahjongGame {
    * 下一玩家回合
    */
   nextPlayerTurn() {
+    console.log('[nextPlayerTurn] currentPlayer=' + this.gameState.currentPlayer + ' waitingForPlayerResponse=' + this.gameState.waitingForPlayerResponse + ' hasPendingAction=' + this.gameState.hasPendingAction);
     // 如果在等待玩家選擇行動，直接堵住（不透傳）
     if (this.gameState.waitingForPlayerResponse) {
       return;

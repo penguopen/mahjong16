@@ -96,15 +96,17 @@ class MahjongEngine {
    * 發牌：每位玩家13張，莊家多一張
    */
   dealTiles() {
+    console.log('[Engine.dealTiles] INITIAL_HAND_SIZE=' + this.INITIAL_HAND_SIZE);
     this.playerHands = [[], [], [], []];
     this.wallTiles = [...this.tilePool];
     this.discardedTiles = [];
     this.meldRecords = [];
-    
+
     // 發初始手牌
     for (let i = 0; i < 4; i++) {
       const start = i * this.INITIAL_HAND_SIZE;
       this.playerHands[i] = this.wallTiles.splice(start, this.INITIAL_HAND_SIZE);
+      console.log('[Engine.dealTiles] player' + i + ' handSize=' + this.playerHands[i].length);
     }
     
     // 莊家補一張
@@ -710,6 +712,7 @@ class MahjongEngine {
    * 重置遊戲
    */
   reset() {
+    console.log('[Engine.reset] called');
     this.buildTilePool();
     this.shuffleTiles();
     return this.dealTiles();
