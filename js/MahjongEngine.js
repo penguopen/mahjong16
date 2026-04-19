@@ -269,7 +269,16 @@ class MahjongEngine {
   doChi(playerIndex, tile, tileA, tileB) {
     const hand = this.playerHands[playerIndex];
     if (!hand.includes(tileA) || !hand.includes(tileB)) return false;
-    
+
+    // 驗證三張牌花色相同且為連續數字（防呆）
+    const suit = this.getSuit(tile);
+    const num  = this.getNumber(tile);
+    const numA = this.getNumber(tileA);
+    const numB = this.getNumber(tileB);
+    if (this.getSuit(tileA) !== suit || this.getSuit(tileB) !== suit) return false;
+    const sorted = [num, numA, numB].sort((a, b) => a - b);
+    if (sorted[1] !== sorted[0] + 1 || sorted[2] !== sorted[1] + 1) return false;
+
     // 移除吃的牌
     this.playerHands[playerIndex] = hand.filter(t => t !== tileA && t !== tileB);
     

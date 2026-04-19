@@ -95,7 +95,10 @@ class MahjongGame {
       messageToast: document.getElementById('messageToast'),
       analysisPanel: document.getElementById('analysisPanel'),
       analysisContent: document.getElementById('analysisContent'),
-      btnCloseAnalysis: document.getElementById('btnCloseAnalysis')
+      btnCloseAnalysis: document.getElementById('btnCloseAnalysis'),
+      chiOverlay: document.getElementById('chiOverlay'),
+      chiOptions: document.getElementById('chiOptions'),
+      btnChiCancel: document.getElementById('btnChiCancel')
     };
   }
   
@@ -121,6 +124,7 @@ class MahjongGame {
     
     // AI 分析面板
     this.ui.btnCloseAnalysis.addEventListener('click', () => this.closeAnalysis());
+    this.ui.btnChiCancel.addEventListener('click', () => this.hideChiUI());
   }
   
   /**
@@ -281,30 +285,52 @@ class MahjongGame {
       return;
     }
 
-    // 多種吃法：讓玩家選擇
-    const names = combos.map(([tileA, tileB]) => {
-      const suit = this.engine.getSuit(tileA);
-      const num1 = this.engine.getNumber(tileA);
-      const num2 = this.engine.getNumber(tileB);
-      const discardNum = this.engine.getNumber(lastDiscard);
-      // 顯示為 2萬3萬吃4萬 格式
-      const suitChar = suit === 'wan' ? '萬' : suit === 'tong' ? '筒' : '條';
-      return `${num1}${suitChar}${num2}${suitChar}吃${discardNum}${suitChar}`;
+    // 多種吃法：顯示遊戲內 UI 選擇
+    this.showChiUI(combos, lastDiscard);
+  }
+
+  /**
+   * 顯示吃牌選擇 UI
+   */
+  showChiUI(combos, lastDiscard) {
+    const discardNum = this.engine.getNumber(lastDiscard);
+    const discardSuit = this.engine.getSuit(lastDiscard);
+    const suitChar = discardSuit === 'wan' ? '萬' : discardSuit === 'tong' ? '筒' : '條';
+
+    this.ui.chiOptions.innerHTML = '';
+    combos.forEach((combo, i) => {
+      const [tileA, tileB] = combo;
+      const numA = this.engine.getNumber(tileA);
+      const numB = this.engine.getNumber(tileB);
+      // 顯示為 7筒8筒吃9筒 格式
+      const label = `${numA}${suitChar}${numB}${suitChar}吃${discardNum}${suitChar}`;
+      const btn = document.createElement('button');
+      btn.className = 'chi-option-btn';
+      btn.textContent = label;
+      btn.addEventListener('click', () => {
+        this.hideChiUI();
+        this.executeChi(combo, lastDiscard);
+      });
+      this.ui.chiOptions.appendChild(btn);
     });
 
-    const choice = prompt('請選擇吃牌方式：\n' + names.map((n, i) => `${i + 1}. ${n}`).join('\n') + '\n（直接確定使用第1個選項）');
+    this.ui.chiOverlay.classList.add('visible');
+    this.ui.btnChi.disabled = true;
+    this.ui.btnPon.disabled = true;
+    this.ui.btnKan.disabled = true;
+    this.ui.btnHu.disabled = true;
+    this.ui.btnDraw.disabled = true;
+  }
 
-    if (!choice) {
-      // 取消 = 放棄吃
-      this.giveUpAction();
-      return;
-    }
-    
-    const idx = parseInt(choice.trim()) - 1;
-    if (idx >= 0 && idx < combos.length) {
-      this.executeChi(combos[idx], lastDiscard);
-    } else {
-      this.executeChi(combos[0], lastDiscard); // 預設第一個
+  /**
+   * 隱藏吃牌選擇 UI
+   */
+  hideChiUI() {
+    this.ui.chiOverlay.classList.remove('visible');
+    this.ui.btnChi.disabled = false;
+    // 恢復 pending 狀態（允許重新點吃或放棄）
+    if (this.gameState.hasPendingAction) {
+      this.enableActionButtons();
     }
   }
   
@@ -340,6 +366,7 @@ class MahjongGame {
     this.gameState.hasPendingAction = false;
     this.gameState.waitingForPlayerResponse = false;
     this.gameState.lastDiscardTile = null;
+    this.hideChiUI(); // 關閉 chi 選擇 overlay
     // 關閉行動按鈕，開啟摸牌
     this.ui.btnPon.disabled = true;
     this.ui.btnChi.disabled = true;
