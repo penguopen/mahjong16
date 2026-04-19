@@ -126,16 +126,23 @@ class MahjongGame {
    * 開始遊戲
    */
   startGame() {
-    // 重置引擎
+    // 如果遊戲已在進行中，先彈出確認
+    if (this.gameState.isPlaying) {
+      if (!confirm('遊戲仍在進行中！確定要重新開始嗎？')) return;
+    }
+
+    // 一開始就禁用開始按鈕，防止遊戲中誤點
+    this.ui.btnStart.disabled = true;
+
     this.engine.reset();
-    
+
     // 重置遊戲狀態
     this.gameState.isPlaying = true;
     this.gameState.currentPlayer = this.engine.dealer;
     this.gameState.selectedTileIndex = null;
     this.gameState.lastDrawnTile = null;
     this.gameState.isFirstDraw = true;
-    
+
     // 重置分數
     this.scores = [this.settings.initialScore, this.settings.initialScore, this.settings.initialScore, this.settings.initialScore];
     // 重置pending狀態
@@ -143,16 +150,12 @@ class MahjongGame {
     this.gameState.hasPendingAction = false;
     this.gameState.waitingForPlayerResponse = false;
     this.gameState.lastDiscardTile = null;
-    
-    // 莊家摸第一張牌（維持16張手牌，起點在莊家）
-    // 遊戲流程：摸牌 → 出牌 → 下一家摸牌...
-    // 注意：dealTiles 已發好16張，startGame 只負責開局不補摸
-    
+
     // 更新 UI
     this.updateUI();
     this.renderAllHands();
     this.updateStatus('遊戲開始！');
-    
+
     // 如果是玩家回合
     if (this.gameState.currentPlayer === 0) {
       this.enablePlayerActions();
@@ -162,7 +165,7 @@ class MahjongGame {
       setTimeout(() => this.aiTurn(), 1000);
     }
   }
-  
+
   /**
    * 玩家摸牌
    */
@@ -384,6 +387,7 @@ class MahjongGame {
     const winResult = this.engine.canWin(0, hand);
     
     if (winResult.canWin) {
+      this.gameState.waitingForPlayerResponse = false;
       this.handleWin(0, lastDiscard.tile, false);
     }
   }
@@ -592,6 +596,10 @@ class MahjongGame {
    */
   handleGameOver() {
     this.gameState.isPlaying = false;
+    this.gameState.hasPendingAction = false;
+    this.gameState.waitingForPlayerResponse = false;
+    this.gameState.pendingChiCombinations = [];
+    this.gameState.lastDiscardTile = null;
     this.disablePlayerActions();
     this.ui.btnStart.disabled = false;
     this.updateStatus('遊戲結束！牌牆已空');
@@ -614,6 +622,8 @@ class MahjongGame {
    */
   renderHand(playerIndex) {
     const hand = this.engine.playerHands[playerIndex];
+    // DEBUG: 追蹤手牌數量
+    console.log(`[renderHand] player=${playerIndex} handSize=${hand.length} melds=${this.engine.meldRecords.filter(m => m.player === playerIndex).length}`);
     // 建立 [tile, originalIndex] 陣列再排序，永不丟失原始 index
     const indexedHand = hand.map((tile, idx) => ({ tile, originalIndex: idx }));
     const sortedIndexed = [...indexedHand].sort((a, b) => a.tile - b.tile);
