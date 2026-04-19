@@ -734,24 +734,30 @@ class MahjongGame {
   }
   
   /**
+   * 渲染攤牌區（所有玩家）
+   */
+  renderMeldArea(playerIndex) {
+    const melds = this.engine.meldRecords.filter(m => m.player === playerIndex);
+    const meldHTML = melds.map(meld => {
+      return meld.tiles.map(tile => this.createSmallTileHTML(tile)).join('') +
+             `<span class="meld-type">${this.getMeldName(meld.type)}</span>`;
+    }).join('<div class="meld-separator"></div>');
+
+    if (playerIndex === 0) {
+      this.ui.meldArea.innerHTML = meldHTML;
+    } else {
+      // AI 玩家的副露顯示：找到對應的 opponent-meld div
+      const aiMeldEl = document.getElementById(`ai${playerIndex}Meld`);
+      if (aiMeldEl) aiMeldEl.innerHTML = meldHTML;
+    }
+  }
+
+  /**
    * 渲染所有攤牌區
    */
   renderAllMelds() {
     for (let i = 0; i < 4; i++) {
       this.renderMeldArea(i);
-    }
-  }
-  
-  /**
-   * 渲染攤牌區
-   */
-  renderMeldArea(playerIndex) {
-    if (playerIndex === 0) {
-      const melds = this.engine.meldRecords.filter(m => m.player === playerIndex);
-      this.ui.meldArea.innerHTML = melds.map(meld => {
-        return meld.tiles.map(tile => this.createSmallTileHTML(tile)).join('') + 
-               `<span class="meld-type">${this.getMeldName(meld.type)}</span>`;
-      }).join('<div class="meld-separator"></div>');
     }
   }
   
