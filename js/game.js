@@ -133,9 +133,9 @@ class MahjongGame {
     // 重置分數
     this.scores = [this.settings.initialScore, this.settings.initialScore, this.settings.initialScore, this.settings.initialScore];
     
-    // 莊家摸第一張牌
-    this.engine.drawTile(this.gameState.currentPlayer);
-    this.gameState.isFirstDraw = false;
+    // 莊家摸第一張牌（維持16張手牌，起點在莊家）
+    // 遊戲流程：摸牌 → 出牌 → 下一家摸牌...
+    // 注意：dealTiles 已發好16張，startGame 只負責開局不補摸
     
     // 更新 UI
     this.updateUI();
@@ -169,6 +169,8 @@ class MahjongGame {
     
     this.renderHand(0);
     this.updateUI();
+    // 鎖住摸牌按鈕，強制玩家先出一張
+    this.enableOnlyDiscard();
     
     // 檢查是否能胡
     const winResult = this.engine.canWin(0);
@@ -476,17 +478,18 @@ class MahjongGame {
    */
   renderHand(playerIndex) {
     const hand = this.engine.playerHands[playerIndex];
-    const sortedHand = [...hand].sort((a, b) => a - b);
+    // 建立 [tile, originalIndex] 陣列再排序，永不丟失原始 index
+    const indexedHand = hand.map((tile, idx) => ({ tile, originalIndex: idx }));
+    const sortedIndexed = [...indexedHand].sort((a, b) => a.tile - b.tile);
     
     if (playerIndex === 0) {
       // 玩家手牌
-      this.ui.handTiles.innerHTML = sortedHand.map((tile, index) => {
-        const actualIndex = hand.indexOf(sortedHand[index]);
-        const isSelected = this.gameState.selectedTileIndex === actualIndex;
+      this.ui.handTiles.innerHTML = sortedIndexed.map(({ tile, originalIndex }) => {
+        const isSelected = this.gameState.selectedTileIndex === originalIndex;
         const isLastDrawn = this.gameState.lastDrawnTile === tile && 
-                           actualIndex === hand.length - 1 &&
+                           originalIndex === hand.length - 1 &&
                            this.gameState.currentPlayer === 0;
-        return this.createTileHTML(tile, isSelected, isLastDrawn, actualIndex, true);
+        return this.createTileHTML(tile, isSelected, isLastDrawn, originalIndex, true);
       }).join('');
       
       // 綁定點擊事件
@@ -497,10 +500,10 @@ class MahjongGame {
         });
       });
     } else {
-      // AI 手牌（只顯示背面）
+      // AI 手牌（只顯示背面，按 originalIndex 順序）
       const element = this.ui[`ai${playerIndex}Hand`];
       if (element) {
-        element.innerHTML = sortedHand.map(() => this.createBackTileHTML()).join('');
+        element.innerHTML = sortedIndexed.map(({ originalIndex }) => this.createBackTileHTML()).join('');
       }
     }
   }
