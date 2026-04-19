@@ -341,13 +341,18 @@ class MahjongGame {
     console.log('[executeChi] BEFORE: handSize=' + this.engine.playerHands[0].length + ' tiles=' + tileA + ',' + discardTile + ',' + tileB);
     const success = this.engine.doChi(0, discardTile, tileA, tileB);
     console.log('[executeChi] AFTER doChi: handSize=' + this.engine.playerHands[0].length + ' success=' + success);
-    if (!success) return;
     
-    // 清除pending狀態
+    // 不管成功或失敗，都要清除pending狀態，避免遊戲卡住
     this.gameState.pendingChiCombinations = [];
     this.gameState.hasPendingAction = false;
     this.gameState.waitingForPlayerResponse = false;
     this.gameState.lastDiscardTile = null;
+    
+    if (!success) {
+      console.warn('[executeChi] doChi failed, clearing pending state and continuing');
+      this.updateUI();
+      return;
+    }
     
     this.renderMeldArea(0);
     this.renderHand(0);
