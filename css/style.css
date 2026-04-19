@@ -1053,3 +1053,307 @@ body {
   animation: fadeInUp 0.2s ease-out backwards;
 }
 .tiles-container .tile:nth-child(n) { animation-delay: calc(n * 0.02s); }
+
+/* ============================================
+   CASINO UI OVERHAUL — New Layout
+   ============================================ */
+
+.game-area {
+  position: relative;
+  z-index: 10;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  gap: 6px;
+  min-height: 0;
+}
+
+.opponent-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 4px 8px;
+}
+
+.opponent-tiles-h {
+  display: flex;
+  flex-direction: row;
+  gap: 2px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.opponent-tiles-h .tile-back {
+  width: 24px;
+  height: 32px;
+}
+
+.table-middle {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 0 4px;
+}
+
+.opponent-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.opponent-tiles-v {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: center;
+}
+
+.opponent-tiles-v .tile-back {
+  width: 24px;
+  height: 32px;
+}
+
+.opponent-meld {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  justify-content: center;
+  min-height: 24px;
+}
+
+.table-discard-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 4px;
+}
+
+.discard-area {
+  background: rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 6px 12px;
+  min-width: 120px;
+}
+
+.discard-label {
+  font-size: 0.6rem;
+  color: rgba(255,255,255,0.5);
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.discard-tiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  justify-content: center;
+  min-height: 32px;
+}
+
+.wall-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 8px 16px;
+}
+
+.wall-label {
+  font-size: 0.55rem;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.wall-count {
+  font-family: var(--font-num);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #00d4ff;
+  text-shadow: 0 0 8px rgba(0,212,255,0.5);
+  line-height: 1;
+}
+
+.wall-unit {
+  font-size: 0.55rem;
+  color: rgba(255,255,255,0.4);
+}
+
+.hand-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 12px;
+  background: rgba(0,0,0,0.15);
+  border-radius: 12px 12px 0 0;
+  border-top: 1px solid rgba(212,168,67,0.2);
+}
+
+/* Central Widget */
+.central-widget {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.widget-frame {
+  width: clamp(80px, 16vw, 130px);
+  height: clamp(80px, 16vw, 130px);
+  background: linear-gradient(145deg, #2d2d2d, #1c1c1c);
+  border-radius: 14px;
+  border: 3px solid #555;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -2px 0 rgba(0,0,0,0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  position: relative;
+}
+
+.direction-labels {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.dir {
+  position: absolute;
+  font-size: clamp(0.45rem, 1.8vw, 0.7rem);
+  font-weight: 700;
+  color: rgba(255,255,255,0.35);
+  font-family: 'Noto Sans TC', sans-serif;
+  transition: color 0.3s, text-shadow 0.3s;
+}
+
+.dir-n { top: 5px; left: 50%; transform: translateX(-50%); }
+.dir-s { bottom: 5px; left: 50%; transform: translateX(-50%); }
+.dir-e { right: 5px; top: 50%; transform: translateY(-50%); }
+.dir-w { left: 5px; top: 50%; transform: translateY(-50%); }
+
+.dir.active {
+  color: #00d4ff;
+  text-shadow: 0 0 10px #00d4ff, 0 0 20px rgba(0,212,255,0.5);
+}
+
+.led-timer {
+  font-family: 'Roboto Mono', 'Consolas', monospace;
+  font-size: clamp(1.3rem, 4.5vw, 2.2rem);
+  font-weight: 700;
+  color: #00d4ff;
+  text-shadow: 0 0 14px #00d4ff, 0 0 28px rgba(0,212,255,0.4);
+  letter-spacing: 0.03em;
+  line-height: 1;
+}
+
+.widget-subtitle {
+  font-size: clamp(0.4rem, 1.3vw, 0.6rem);
+  color: rgba(255,255,255,0.6);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+  white-space: nowrap;
+}
+
+/* Player Avatars */
+.player-avatar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  background: rgba(10,20,15,0.75);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(212,168,67,0.25);
+  border-radius: 10px;
+  padding: 7px 10px;
+  min-width: 65px;
+}
+
+.avatar-ai { border-color: rgba(255,255,255,0.1); }
+.avatar-player { border-color: rgba(212,168,67,0.4); }
+
+.avatar-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.avatar-name {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-gold);
+}
+
+.avatar-score {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #fff;
+  font-family: var(--font-num);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+}
+
+.avatar-tiles-count {
+  font-size: 0.55rem;
+  color: rgba(255,255,255,0.5);
+}
+
+.avatar-tiles-count span {
+  color: #00d4ff;
+  font-weight: 700;
+}
+
+/* Listen Badge */
+.listen-badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: linear-gradient(135deg, #ff6b00, #ff4500);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 900;
+  padding: 3px 8px;
+  border-radius: 20px;
+  box-shadow: 0 0 12px rgba(255,69,0,0.6);
+  animation: pulse-listen 1.2s ease-in-out infinite;
+  z-index: 20;
+}
+
+@keyframes pulse-listen {
+  0%, 100% { box-shadow: 0 0 12px rgba(255,69,0,0.6); }
+  50% { box-shadow: 0 0 20px rgba(255,69,0,0.9), 0 0 30px rgba(255,69,0,0.4); }
+}
+
+/* Meld type labels */
+.meld-type {
+  font-size: 0.55rem;
+  color: var(--text-gold);
+  background: rgba(0,0,0,0.4);
+  padding: 1px 4px;
+  border-radius: 3px;
+  margin-left: 2px;
+}
+
+.meld-separator {
+  width: 100%;
+  height: 3px;
+}
+
+/* Discard last marker */
+.discard-last-marker {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 8px solid #ff6b00;
+}

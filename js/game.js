@@ -98,7 +98,17 @@ class MahjongGame {
       btnCloseAnalysis: document.getElementById('btnCloseAnalysis'),
       chiOverlay: document.getElementById('chiOverlay'),
       chiOptions: document.getElementById('chiOptions'),
-      btnChiCancel: document.getElementById('btnChiCancel')
+      btnChiCancel: document.getElementById('btnChiCancel'),
+      // New casino UI elements
+      ledTimer: document.getElementById('ledTimer'),
+      dirEast: document.getElementById('dirEast'),
+      dirSouth: document.getElementById('dirSouth'),
+      dirWest: document.getElementById('dirWest'),
+      dirNorth: document.getElementById('dirNorth'),
+      ai1TilesCount: document.getElementById('ai1TilesCount'),
+      ai2TilesCount: document.getElementById('ai2TilesCount'),
+      ai3TilesCount: document.getElementById('ai3TilesCount'),
+      playerTilesCount: document.getElementById('playerTilesCount')
     };
   }
   
@@ -163,6 +173,8 @@ class MahjongGame {
     this.updateUI();
     this.renderAllHands();
     this.updateStatus('遊戲開始！');
+    this.updateAvatarScores();
+    this.renderCentralWidget();
 
     // 如果是玩家回合
     if (this.gameState.currentPlayer === 0) {
@@ -615,6 +627,8 @@ class MahjongGame {
       // AI 回合
       setTimeout(() => this.aiTurn(), 1000);
     }
+    this.updateAvatarScores();
+    this.renderCentralWidget();
   }
   
   /**
@@ -760,15 +774,81 @@ class MahjongGame {
       this.renderMeldArea(i);
     }
   }
-  
+
+  /**
+   * 渲染中央 widget（LED 計時器 + 方向標籤）
+   */
+  renderCentralWidget() {
+    // 更新剩餘牌數
+    if (this.ui.ledTimer) {
+      this.ui.ledTimer.textContent = this.engine.wallTiles.length;
+    }
+    // 更新方向標籤高亮
+    const windEls = {
+      31: this.ui.dirEast,
+      32: this.ui.dirSouth,
+      33: this.ui.dirWest,
+      34: this.ui.dirNorth
+    };
+    Object.values(windEls).forEach(el => el && el.classList.remove('active'));
+    const currentWind = this.playerWinds[this.gameState.currentPlayer];
+    const activeEl = windEls[currentWind];
+    if (activeEl) activeEl.classList.add('active');
+  }
+
+  /**
+   * 更新所有玩家 Avatar 的分數和牌數
+   */
+  updateAvatarScores() {
+    const names = ['player', 'ai1', 'ai2', 'ai3'];
+    const scoreEls = [
+      this.ui.playerScore,
+      this.ui.ai1Score,
+      this.ui.ai2Score,
+      this.ui.ai3Score
+    ];
+    const tilesCountEls = [
+      this.ui.playerTilesCount,
+      this.ui.ai1TilesCount,
+      this.ui.ai2TilesCount,
+      this.ui.ai3TilesCount
+    ];
+    for (let i = 0; i < 4; i++) {
+      if (scoreEls[i]) scoreEls[i].textContent = this.scores[i];
+      if (tilesCountEls[i]) {
+        const count = this.engine.playerHands[i].length;
+        tilesCountEls[i].innerHTML = `<span>${count}</span>張`;
+      }
+    }
+  }
+
+  /**
+   * 顯示/隱藏聽牌 badge
+   */
+  showListenBadge(playerIndex, show) {
+    const avatarEl = document.getElementById(`avatar${playerIndex}`);
+    if (!avatarEl) return;
+    const existing = avatarEl.querySelector('.listen-badge');
+    if (show && !existing) {
+      const badge = document.createElement('div');
+      badge.className = 'listen-badge';
+      badge.textContent = '聴牌';
+      avatarEl.style.position = 'relative';
+      avatarEl.appendChild(badge);
+    } else if (!show && existing) {
+      existing.remove();
+    }
+  }
+
   /**
    * 渲染捨牌區
    */
   renderDiscards() {
-    this.ui.discardTiles.innerHTML = this.engine.discardedTiles.map(disc => {
-      return this.createSmallTileHTML(disc.tile);
+    this.ui.discardTiles.innerHTML = this.engine.discardedTiles.map((disc, idx, arr) => {
+      const isLast = idx === arr.length - 1;
+      return `<div class="tile-small" style="position:relative">${this.getTileSVG(disc.tile, 'tile-img-small')}${isLast ? '<div class="discard-last-marker"></div>' : ''}</div>`;
     }).join('');
-    
+
     this.ui.wallCount.textContent = this.engine.wallTiles.length;
   }
   

@@ -10,87 +10,96 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <div class="table-surface"></div>
+  <div class="table-border"></div>
 
-  <!-- 資訊列 -->
   <div class="info-bar">
-    <div class="info-item">
-      <span class="info-label">莊家</span>
-      <span class="info-value dealer-badge" id="dealer">東</span>
-    </div>
-    <div class="info-item">
-      <span class="info-label">剩餘</span>
-      <span class="info-value" id="remaining">70</span>
-    </div>
-    <div class="game-title">🀄 麻雀 16</div>
-    <div class="info-item">
-      <span class="info-label">局數</span>
-      <span class="info-value" id="round">東一局</span>
-    </div>
-    <button class="settings-btn" id="settingsBtn">⚙️ 設定</button>
+    <div class="info-item"><span class="info-label">莊家</span><span class="info-value dealer-badge" id="dealer">東</span></div>
+    <div class="info-item"><span class="info-label">剩餘</span><span class="info-value" id="remaining">70</span></div>
+    <div class="game-title">🀄 麻雀16</div>
+    <div class="info-item"><span class="info-label">局數</span><span class="info-value" id="round">東一局</span></div>
+    <button class="settings-btn" id="settingsBtn">⚙️</button>
   </div>
 
-  <!-- 晶片/點數面板 -->
-  <div class="chip-panel" id="chipPanel">
-    <div class="chip-item">
-      <span class="chip-label">你的點數</span>
-      <span class="chip-value" id="playerScore">1000</span>
-    </div>
-    <div class="chip-item">
-      <span class="chip-label">AI-1</span>
-      <span class="chip-value" id="ai1Score">1000</span>
-    </div>
-    <div class="chip-item">
-      <span class="chip-label">AI-2</span>
-      <span class="chip-value" id="ai2Score">1000</span>
-    </div>
-    <div class="chip-item">
-      <span class="chip-label">AI-3</span>
-      <span class="chip-value" id="ai3Score">1000</span>
-    </div>
-  </div>
-
-  <!-- 桌面區 -->
-  <div class="table-area">
-    <!-- AI 3 手牌 -->
-    <div class="opponent-hand opponent-top" id="opponentTop">
-      <div class="opponent-label">AI-3</div>
-      <div class="opponent-tiles" id="ai3Hand"></div>
+  <div class="game-area">
+    <!-- AI-3 top row -->
+    <div class="opponent-row opponent-top" id="opponentTop">
+      <div class="player-avatar avatar-ai" id="avatar3">
+        <div class="avatar-icon">🀠</div>
+        <div class="avatar-name">AI-3</div>
+        <div class="avatar-score" id="ai3Score">1000</div>
+        <div class="avatar-tiles-count" id="ai3TilesCount"><span>16</span>張</div>
+      </div>
+      <div class="opponent-tiles-h" id="ai3Hand"></div>
+      <div class="opponent-meld" id="ai3Meld"></div>
     </div>
 
+    <!-- Middle row: AI-1 left | Center widget | AI-2 right -->
     <div class="table-middle">
-      <!-- AI 1 左 -->
-      <div class="opponent-hand opponent-left" id="opponentLeft">
-        <div class="opponent-label">AI-1</div>
+      <div class="opponent-col opponent-left" id="opponentLeft">
+        <div class="player-avatar avatar-ai" id="avatar1">
+          <div class="avatar-icon">🀠</div>
+          <div class="avatar-name">AI-1</div>
+          <div class="avatar-score" id="ai1Score">1000</div>
+          <div class="avatar-tiles-count" id="ai1TilesCount"><span>16</span>張</div>
+        </div>
         <div class="opponent-tiles-v" id="ai1Hand"></div>
+        <div class="opponent-meld" id="ai1Meld"></div>
       </div>
 
-      <!-- 牌桌中央 -->
-      <div class="table-center">
-        <div class="discard-area" id="discardArea">
-          <div class="discard-label">捨牌區</div>
-          <div class="discard-tiles" id="discardTiles"></div>
-        </div>
-        <div class="wall-info">
-          <span id="wallCount">70</span> 張
+      <!-- Central Widget -->
+      <div class="central-widget" id="centralWidget">
+        <div class="widget-frame">
+          <div class="direction-labels">
+            <span class="dir dir-n" id="dirNorth">北</span>
+            <span class="dir dir-s" id="dirSouth">南</span>
+            <span class="dir dir-w" id="dirWest">西</span>
+            <span class="dir dir-e active" id="dirEast">東</span>
+          </div>
+          <div class="led-timer" id="ledTimer">70</div>
+          <div class="widget-subtitle">血戰 底分: 4500</div>
         </div>
       </div>
 
-      <!-- AI 2 右 -->
-      <div class="opponent-hand opponent-right" id="opponentRight">
-        <div class="opponent-label">AI-2</div>
+      <div class="opponent-col opponent-right" id="opponentRight">
+        <div class="player-avatar avatar-ai" id="avatar2">
+          <div class="avatar-icon">🀠</div>
+          <div class="avatar-name">AI-2</div>
+          <div class="avatar-score" id="ai2Score">1000</div>
+          <div class="avatar-tiles-count" id="ai2TilesCount"><span>16</span>張</div>
+        </div>
         <div class="opponent-tiles-v" id="ai2Hand"></div>
+        <div class="opponent-meld" id="ai2Meld"></div>
       </div>
     </div>
 
-    <!-- 玩家手牌 -->
-    <div class="hand-area">
-      <div class="hand-label">你的手牌（點擊選擇）</div>
+    <!-- Discard area + Wall info (below center widget) -->
+    <div class="table-discard-row">
+      <div class="discard-area" id="discardArea">
+        <div class="discard-label">捨牌</div>
+        <div class="discard-tiles" id="discardTiles"></div>
+      </div>
+      <div class="wall-panel">
+        <div class="wall-label">牌牆</div>
+        <div class="wall-count" id="wallCount">70</div>
+        <div class="wall-unit">張</div>
+      </div>
+    </div>
+
+    <!-- Player bottom row -->
+    <div class="hand-row" id="handRow">
+      <div class="player-avatar avatar-player" id="avatar0">
+        <div class="avatar-icon">🀄</div>
+        <div class="avatar-name">你</div>
+        <div class="avatar-score" id="playerScore">1000</div>
+        <div class="avatar-tiles-count" id="playerTilesCount"><span>16</span>張</div>
+      </div>
       <div class="meld-area" id="meldArea"></div>
       <div class="tiles-container" id="handTiles"></div>
     </div>
   </div>
 
-  <!-- 操作區 -->
+  <!-- Action area -->
   <div class="action-area">
     <div class="game-status" id="gameStatus">等待開始...</div>
     <div class="action-buttons">
@@ -101,11 +110,11 @@
       <button class="action-btn btn-chi" id="btnChi" disabled>吃</button>
       <button class="action-btn btn-kan" id="btnKan" disabled>槓</button>
       <button class="action-btn btn-hu" id="btnHu" disabled>胡</button>
-      <button class="action-btn btn-ai" id="btnAi">AI 分析</button>
+      <button class="action-btn btn-ai" id="btnAi">AI分析</button>
     </div>
   </div>
 
-  <!-- 設定面板 -->
+  <!-- Settings Panel -->
   <div class="settings-overlay" id="settingsOverlay"></div>
   <div class="settings-panel" id="settingsPanel">
     <h2>⚙️ 遊戲設定</h2>
@@ -142,10 +151,10 @@
     </div>
   </div>
 
-  <!-- 提示訊息 -->
+  <!-- Message Toast -->
   <div class="message-toast" id="messageToast"></div>
 
-  <!-- Chi 選擇面板 -->
+  <!-- Chi Overlay -->
   <div class="chi-overlay" id="chiOverlay">
     <div class="chi-panel">
       <div class="chi-title">🀐 請選擇吃牌方式</div>
@@ -154,7 +163,7 @@
     </div>
   </div>
 
-  <!-- AI 分析面板 -->
+  <!-- Analysis Panel -->
   <div class="analysis-panel" id="analysisPanel">
     <h3>📊 AI 局勢分析</h3>
     <div id="analysisContent"></div>
