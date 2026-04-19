@@ -501,6 +501,11 @@ class MahjongGame {
     this.gameState.lastDiscardTile = tile;
     console.log('[notifyOtherPlayers] tile=' + tile + ' fromPlayer=' + fromPlayer + ' nextPlayer=0 hasPendingAction will be set');
     
+    // 先關閉所有行動按鈕，避免上一輪的殘留狀態
+    this.ui.btnPon.disabled = true;
+    this.ui.btnKan.disabled = true;
+    this.ui.btnHu.disabled = true;
+    
     // 檢查是否有玩家可以碰、槓、胡
     for (let i = 1; i <= 3; i++) {
       const playerIndex = (fromPlayer + i) % 4;
@@ -529,9 +534,17 @@ class MahjongGame {
     if (chiCombos.length > 0) {
       this.gameState.pendingChiCombinations = chiCombos;
       this.gameState.hasPendingAction = true;
+      this.gameState.waitingForPlayerResponse = true;
       this.ui.btnChi.disabled = false;
       this.ui.btnDraw.disabled = true; // 鎖住摸牌，等玩家選擇
       this.showToast('可以吃！');
+    } else {
+      // 沒有任何行動選項：關閉所有按鈕，允許玩家直接摸牌
+      this.gameState.pendingChiCombinations = [];
+      this.gameState.hasPendingAction = false;
+      this.gameState.waitingForPlayerResponse = false;
+      this.ui.btnChi.disabled = true;
+      this.ui.btnDraw.disabled = false;
     }
   }
   
