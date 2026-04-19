@@ -831,7 +831,7 @@ class MahjongGame {
   getTileDisplay(tile) {
     const suit = this.engine.getSuit(tile);
     if (suit === 'honor') {
-      const honorNames = ['', '', '', '', '中', '發', '白'];
+      const honorNames = ['東', '南', '西', '北', '中', '發', '白'];
       const idx = this.engine.getNumber(tile) - 31;
       return honorNames[idx] || '';
     } else {

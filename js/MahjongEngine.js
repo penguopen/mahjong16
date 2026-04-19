@@ -193,13 +193,6 @@ class MahjongEngine {
     if (suit === 'honor') return false; // 字牌不能吃
     
     const num = this.getNumber(tile);
-    const suitPrefix = suit === 'wan' ? 1 : suit === 'tong' ? 11 : 21;
-    
-    let count = 0;
-    for (let t of hand) {
-      if (this.getSuit(t) === suit && this.getNumber(t) === num) count++;
-    }
-    if (count === 0) return false;
     
     // 檢查能否組成順子
     const results = this.findChiCombinations(hand, tile);
