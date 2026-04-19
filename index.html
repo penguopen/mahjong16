@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>麻雀16 - 台灣正宗16張麻將</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- 資訊列 -->
+  <div class="info-bar">
+    <div class="info-item">
+      <span class="info-label">莊家</span>
+      <span class="info-value dealer-badge" id="dealer">東</span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">剩餘</span>
+      <span class="info-value" id="remaining">70</span>
+    </div>
+    <div class="game-title">🀄 麻雀 16</div>
+    <div class="info-item">
+      <span class="info-label">局數</span>
+      <span class="info-value" id="round">東一局</span>
+    </div>
+    <button class="settings-btn" id="settingsBtn">⚙️ 設定</button>
+  </div>
+
+  <!-- 晶片/點數面板 -->
+  <div class="chip-panel" id="chipPanel">
+    <div class="chip-item">
+      <span class="chip-label">你的點數</span>
+      <span class="chip-value" id="playerScore">1000</span>
+    </div>
+    <div class="chip-item">
+      <span class="chip-label">AI-1</span>
+      <span class="chip-value" id="ai1Score">1000</span>
+    </div>
+    <div class="chip-item">
+      <span class="chip-label">AI-2</span>
+      <span class="chip-value" id="ai2Score">1000</span>
+    </div>
+    <div class="chip-item">
+      <span class="chip-label">AI-3</span>
+      <span class="chip-value" id="ai3Score">1000</span>
+    </div>
+  </div>
+
+  <!-- 桌面區 -->
+  <div class="table-area">
+    <!-- AI 3 手牌 -->
+    <div class="opponent-hand opponent-top" id="opponentTop">
+      <div class="opponent-label">AI-3</div>
+      <div class="opponent-tiles" id="ai3Hand"></div>
+    </div>
+
+    <div class="table-middle">
+      <!-- AI 1 左 -->
+      <div class="opponent-hand opponent-left" id="opponentLeft">
+        <div class="opponent-label">AI-1</div>
+        <div class="opponent-tiles-v" id="ai1Hand"></div>
+      </div>
+
+      <!-- 牌桌中央 -->
+      <div class="table-center">
+        <div class="discard-area" id="discardArea">
+          <div class="discard-label">捨牌區</div>
+          <div class="discard-tiles" id="discardTiles"></div>
+        </div>
+        <div class="wall-info">
+          <span id="wallCount">70</span> 張
+        </div>
+      </div>
+
+      <!-- AI 2 右 -->
+      <div class="opponent-hand opponent-right" id="opponentRight">
+        <div class="opponent-label">AI-2</div>
+        <div class="opponent-tiles-v" id="ai2Hand"></div>
+      </div>
+    </div>
+
+    <!-- 玩家手牌 -->
+    <div class="hand-area">
+      <div class="hand-label">你的手牌（點擊選擇）</div>
+      <div class="meld-area" id="meldArea"></div>
+      <div class="tiles-container" id="handTiles"></div>
+    </div>
+  </div>
+
+  <!-- 操作區 -->
+  <div class="action-area">
+    <div class="game-status" id="gameStatus">等待開始...</div>
+    <div class="action-buttons">
+      <button class="action-btn btn-start" id="btnStart">開始遊戲</button>
+      <button class="action-btn btn-draw" id="btnDraw" disabled>摸牌</button>
+      <button class="action-btn btn-discard" id="btnDiscard" disabled>出牌</button>
+      <button class="action-btn btn-pon" id="btnPon" disabled>碰</button>
+      <button class="action-btn btn-kan" id="btnKan" disabled>槓</button>
+      <button class="action-btn btn-hu" id="btnHu" disabled>胡</button>
+      <button class="action-btn btn-ai" id="btnAi">AI 分析</button>
+    </div>
+  </div>
+
+  <!-- 設定面板 -->
+  <div class="settings-overlay" id="settingsOverlay"></div>
+  <div class="settings-panel" id="settingsPanel">
+    <h2>⚙️ 遊戲設定</h2>
+    <div class="setting-group">
+      <label>初始點數</label>
+      <input type="number" id="settingInitial" value="1000" min="100" max="99999">
+    </div>
+    <div class="setting-group">
+      <label>底（每局最低）</label>
+      <input type="number" id="settingBase" value="50" min="10" max="1000">
+    </div>
+    <div class="setting-group">
+      <label>台（每台）</label>
+      <input type="number" id="settingFan" value="20" min="10" max="500">
+    </div>
+    <div class="setting-group">
+      <label>AI 等級</label>
+      <select id="settingAI">
+      <option value="1">低（隨機）</option>
+      <option value="2" selected>中（向聽數）</option>
+      <option value="3">高（防禦）</option>
+      </select>
+    </div>
+    <div class="setting-group">
+      <label>模式</label>
+      <select id="settingMode">
+        <option value="ai" selected>單人（對戰 AI）</option>
+        <option value="online">連線（預留）</option>
+      </select>
+    </div>
+    <div class="setting-actions">
+      <button class="action-btn btn-draw" id="btnSaveSettings">儲存</button>
+      <button class="action-btn btn-pon" id="btnCloseSettings">關閉</button>
+    </div>
+  </div>
+
+  <!-- 提示訊息 -->
+  <div class="message-toast" id="messageToast"></div>
+
+  <!-- AI 分析面板 -->
+  <div class="analysis-panel" id="analysisPanel">
+    <h3>📊 AI 局勢分析</h3>
+    <div id="analysisContent"></div>
+    <button class="action-btn btn-kan" id="btnCloseAnalysis">關閉</button>
+  </div>
+
+  <script src="js/MahjongEngine.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
