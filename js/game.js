@@ -26,7 +26,9 @@ class MahjongGame {
       currentPlayer: 0,
       selectedTileIndex: null,
       lastDrawnTile: null,
-      isFirstDraw: true // 莊家補一張
+      isFirstDraw: true, // 莊家補一張
+      pendingChiCombinations: [], // 等待玩家選擇的吃牌組合
+      hasPendingAction: false      // 是否有吃/碰/槓/胡選項要等玩家選擇
     };
     
     // 圈風與玩家風
@@ -73,6 +75,7 @@ class MahjongGame {
       btnDraw: document.getElementById('btnDraw'),
       btnDiscard: document.getElementById('btnDiscard'),
       btnPon: document.getElementById('btnPon'),
+      btnChi: document.getElementById('btnChi'),
       btnKan: document.getElementById('btnKan'),
       btnHu: document.getElementById('btnHu'),
       btnAi: document.getElementById('btnAi'),
@@ -102,6 +105,7 @@ class MahjongGame {
     this.ui.btnDraw.addEventListener('click', () => this.playerDraw());
     this.ui.btnDiscard.addEventListener('click', () => this.playerDiscard());
     this.ui.btnPon.addEventListener('click', () => this.playerPon());
+    this.ui.btnChi.addEventListener('click', () => this.playerChi());
     this.ui.btnKan.addEventListener('click', () => this.playerKan());
     this.ui.btnHu.addEventListener('click', () => this.playerHu());
     this.ui.btnAi.addEventListener('click', () => this.showAnalysis());
@@ -158,6 +162,13 @@ class MahjongGame {
   playerDraw() {
     if (this.gameState.currentPlayer !== 0) return;
     
+    // 如果有pending的吃/碰/槓/胡選項，點摸牌 = 放棄那些選項
+    if (this.gameState.hasPendingAction) {
+      this.gameState.pendingChiCombinations = [];
+      this.gameState.hasPendingAction = false;
+      this.updateStatus('放棄行動。請摸牌');
+    }
+    
     const tile = this.engine.drawTile(0);
     if (!tile) {
       this.handleGameOver();
@@ -212,6 +223,9 @@ class MahjongGame {
     if (!lastDiscard) return;
     
     if (this.engine.doPeng(0, lastDiscard.tile)) {
+      // 清除pending狀態
+      this.gameState.pendingChiCombinations = [];
+      this.gameState.hasPendingAction = false;
       this.renderMeldArea(0);
       this.renderHand(0);
       this.renderDiscards();
@@ -221,6 +235,85 @@ class MahjongGame {
       this.updateStatus('碰！請選擇要出的牌');
       this.enableOnlyDiscard();
     }
+  }
+  
+  /**
+   * 玩家吃（針對別人打的牌）
+   */
+  playerChi() {
+    if (this.gameState.currentPlayer !== 0) return;
+    if (this.gameState.pendingChiCombinations.length === 0) return;
+    
+    const combos = this.gameState.pendingChiCombinations;
+    const lastDiscard = this.engine.discardedTiles[this.engine.discardedTiles.length - 1];
+    if (!lastDiscard) return;
+    
+    // 只有一種吃法時直接執行
+    if (combos.length === 1) {
+      this.executeChi(combos[0], lastDiscard.tile);
+      return;
+    }
+    
+    // 多種吃法：讓玩家選擇
+    const names = combos.map(([tileA, tileB]) => {
+      const suit = this.engine.getSuit(tileA);
+      const num1 = this.engine.getNumber(tileA);
+      const num2 = this.engine.getNumber(tileB);
+      const discardNum = this.engine.getNumber(lastDiscard.tile);
+      // 顯示為 2萬3萬吃4萬 格式
+      const suitChar = suit === 'wan' ? '萬' : suit === 'tong' ? '筒' : '條';
+      return `${num1}${suitChar}${num2}${suitChar}吃${discardNum}${suitChar}`;
+    });
+    
+    const choice = prompt('請選擇吃牌方式：\n' + names.map((n, i) => `${i + 1}. ${n}`).join('\n') + '\n（直接確定使用第1個選項）');
+    
+    if (!choice) {
+      // 取消 = 放棄吃
+      this.giveUpAction();
+      return;
+    }
+    
+    const idx = parseInt(choice.trim()) - 1;
+    if (idx >= 0 && idx < combos.length) {
+      this.executeChi(combos[idx], lastDiscard.tile);
+    } else {
+      this.executeChi(combos[0], lastDiscard.tile); // 預設第一個
+    }
+  }
+  
+  /**
+   * 執行吃牌
+   */
+  executeChi([tileA, tileB], discardTile) {
+    const success = this.engine.doChi(0, discardTile, tileA, tileB);
+    if (!success) return;
+    
+    // 清除pending狀態
+    this.gameState.pendingChiCombinations = [];
+    this.gameState.hasPendingAction = false;
+    
+    this.renderMeldArea(0);
+    this.renderHand(0);
+    this.renderDiscards();
+    this.updateUI();
+    
+    this.updateStatus('吃！請選擇要出的牌');
+    this.enableOnlyDiscard();
+  }
+  
+  /**
+   * 放棄行動（吃/碰/槓/胡）
+   */
+  giveUpAction() {
+    this.gameState.pendingChiCombinations = [];
+    this.gameState.hasPendingAction = false;
+    // 關閉行動按鈕，開啟摸牌
+    this.ui.btnPon.disabled = true;
+    this.ui.btnChi.disabled = true;
+    this.ui.btnKan.disabled = true;
+    this.ui.btnHu.disabled = true;
+    this.ui.btnDraw.disabled = false;
+    this.updateStatus('放棄。請摸牌');
   }
   
   /**
@@ -234,6 +327,9 @@ class MahjongGame {
     
     if (this.engine.canKong(0, lastDiscard.tile)) {
       this.engine.doKong(0, lastDiscard.tile);
+      // 清除pending狀態
+      this.gameState.pendingChiCombinations = [];
+      this.gameState.hasPendingAction = false;
       this.renderMeldArea(0);
       this.renderHand(0);
       this.updateUI();
@@ -355,6 +451,16 @@ class MahjongGame {
       this.ui.btnKan.disabled = false;
       this.showToast('可以槓！');
     }
+    
+    // 檢查玩家能否吃
+    const chiCombos = this.engine.findChiCombinations(this.engine.playerHands[0], tile);
+    if (chiCombos.length > 0) {
+      this.gameState.pendingChiCombinations = chiCombos;
+      this.gameState.hasPendingAction = true;
+      this.ui.btnChi.disabled = false;
+      this.ui.btnDraw.disabled = true; // 鎖住摸牌，等玩家選擇
+      this.showToast('可以吃！');
+    }
   }
   
   /**
@@ -365,6 +471,7 @@ class MahjongGame {
     this.ui.btnPon.disabled = true;
     this.ui.btnKan.disabled = true;
     this.ui.btnHu.disabled = true;
+    this.ui.btnChi.disabled = true;
     
     // 切換玩家
     this.gameState.currentPlayer = this.engine.nextTurn();
@@ -376,21 +483,24 @@ class MahjongGame {
       return;
     }
     
-    // 摸牌
-    const drawnTile = this.engine.drawTile(this.gameState.currentPlayer);
-    if (!drawnTile) {
-      this.handleGameOver();
-      return;
-    }
-    
-    this.renderHand(this.gameState.currentPlayer);
-    
-    // 如果是玩家
+    // 如果是玩家：檢查是否有pending的吃/碰/槓/胡選項
     if (this.gameState.currentPlayer === 0) {
+      if (this.gameState.hasPendingAction) {
+        // 有選項，先讓玩家選擇（不透過牆摸牌）
+        this.enableActionButtons(); // 啟用吃/碰/槓/胡（摸牌按鈕保持鎖住）
+        this.updateStatus('請選擇：吃/碰/槓/胡，或放棄');
+        return;
+      }
+      // 沒有pending選項，正常摸牌
+      const drawnTile = this.engine.drawTile(0);
+      if (!drawnTile) {
+        this.handleGameOver();
+        return;
+      }
       this.gameState.lastDrawnTile = drawnTile;
+      this.renderHand(0);
       this.enablePlayerActions();
       this.updateStatus('請選擇要出的牌');
-      
       // 檢查能否胡（玩家自摸）
       const winResult = this.engine.canWin(0);
       this.ui.btnHu.disabled = !winResult.canWin;
@@ -596,14 +706,36 @@ class MahjongGame {
   }
   
   /**
-   * 啟用玩家操作按鈕
+   * 啟用玩家操作按鈕（摸牌階段）
    */
   enablePlayerActions() {
     this.ui.btnDraw.disabled = this.gameState.currentPlayer !== 0;
     this.ui.btnDiscard.disabled = true; // 需要先選擇牌
     this.ui.btnPon.disabled = true;
+    this.ui.btnChi.disabled = true;
     this.ui.btnKan.disabled = true;
     this.ui.btnHu.disabled = true;
+  }
+  
+  /**
+   * 啟用行動按鈕（吃/碰/槓/胡 - 針對別人打的牌）
+   */
+  enableActionButtons() {
+    const lastDiscard = this.engine.discardedTiles[this.engine.discardedTiles.length - 1];
+    if (!lastDiscard) return;
+    
+    const tile = lastDiscard.tile;
+    this.ui.btnDraw.disabled = false; // 放棄吃/碰/槓，選擇摸牌
+    this.ui.btnDiscard.disabled = true;
+    
+    // 碰
+    this.ui.btnPon.disabled = !this.engine.canPeng(0, tile);
+    // 槓
+    this.ui.btnKan.disabled = !this.engine.canKong(0, tile);
+    // 吃
+    this.ui.btnChi.disabled = this.gameState.pendingChiCombinations.length === 0;
+    // 胡
+    this.ui.btnHu.disabled = !this.engine.canHu(0, tile);
   }
   
   /**
@@ -613,6 +745,7 @@ class MahjongGame {
     this.ui.btnDraw.disabled = true;
     this.ui.btnDiscard.disabled = false;
     this.ui.btnPon.disabled = true;
+    this.ui.btnChi.disabled = true;
     this.ui.btnKan.disabled = true;
     this.ui.btnHu.disabled = true;
   }
