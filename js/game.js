@@ -245,7 +245,7 @@ class MahjongGame {
     const lastDiscard = this.gameState.lastDiscardTile;
     if (!lastDiscard) return;
 
-    if (this.engine.doPeng(0, lastDiscard.tile)) {
+    if (this.engine.doPeng(0, lastDiscard)) {
       console.log('[playerPon] AFTER doPeng: handSize=' + this.engine.playerHands[0].length);
       // 清除pending狀態
       this.gameState.pendingChiCombinations = [];
@@ -277,7 +277,7 @@ class MahjongGame {
 
     // 只有一種吃法時直接執行
     if (combos.length === 1) {
-      this.executeChi(combos[0], lastDiscard.tile);
+      this.executeChi(combos[0], lastDiscard);
       return;
     }
 
@@ -286,7 +286,7 @@ class MahjongGame {
       const suit = this.engine.getSuit(tileA);
       const num1 = this.engine.getNumber(tileA);
       const num2 = this.engine.getNumber(tileB);
-      const discardNum = this.engine.getNumber(lastDiscard.tile);
+      const discardNum = this.engine.getNumber(lastDiscard);
       // 顯示為 2萬3萬吃4萬 格式
       const suitChar = suit === 'wan' ? '萬' : suit === 'tong' ? '筒' : '條';
       return `${num1}${suitChar}${num2}${suitChar}吃${discardNum}${suitChar}`;
@@ -302,9 +302,9 @@ class MahjongGame {
     
     const idx = parseInt(choice.trim()) - 1;
     if (idx >= 0 && idx < combos.length) {
-      this.executeChi(combos[idx], lastDiscard.tile);
+      this.executeChi(combos[idx], lastDiscard);
     } else {
-      this.executeChi(combos[0], lastDiscard.tile); // 預設第一個
+      this.executeChi(combos[0], lastDiscard); // 預設第一個
     }
   }
   
@@ -354,12 +354,12 @@ class MahjongGame {
    */
   playerKan() {
     if (this.gameState.currentPlayer !== 0) return;
-    
+
     const lastDiscard = this.gameState.lastDiscardTile;
     if (!lastDiscard) return;
-    
-    if (this.engine.canKong(0, lastDiscard.tile)) {
-      this.engine.doKong(0, lastDiscard.tile);
+
+    if (this.engine.canKong(0, lastDiscard)) {
+      this.engine.doKong(0, lastDiscard);
       // 清除pending狀態
       this.gameState.pendingChiCombinations = [];
       this.gameState.hasPendingAction = false;
@@ -394,16 +394,16 @@ class MahjongGame {
    */
   playerHu() {
     if (this.gameState.currentPlayer !== 0) return;
-    
+
     const lastDiscard = this.gameState.lastDiscardTile;
     if (!lastDiscard) return;
-    
-    const hand = [...this.engine.playerHands[0], lastDiscard.tile];
+
+    const hand = [...this.engine.playerHands[0], lastDiscard];
     const winResult = this.engine.canWin(0, hand);
-    
+
     if (winResult.canWin) {
       this.gameState.waitingForPlayerResponse = false;
-      this.handleWin(0, lastDiscard.tile, false);
+      this.handleWin(0, lastDiscard, false);
     }
   }
   
@@ -785,11 +785,11 @@ class MahjongGame {
   enableActionButtons() {
     const lastDiscard = this.gameState.lastDiscardTile;
     if (!lastDiscard) return;
-    
-    const tile = lastDiscard.tile;
+
+    const tile = lastDiscard; // lastDiscard is already the tile number
     this.ui.btnDraw.disabled = false; // 放棄吃/碰/槓，選擇摸牌
     this.ui.btnDiscard.disabled = true;
-    
+
     // 碰
     this.ui.btnPon.disabled = !this.engine.canPeng(0, tile);
     // 槓
