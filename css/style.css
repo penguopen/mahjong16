@@ -445,13 +445,12 @@ body {
 }
 
 /* ============================================
-   麻將牌核心樣式 (.tile)
+   SVG 瓷磚圖片樣式
    ============================================ */
 .tile {
   /* 尺寸 - 響應式 */
-  --tile-w: 38px;
-  --tile-h: 52px;
-  --tile-font: 1.1rem;
+  --tile-w: 42px;
+  --tile-h: 58px;
 
   width: var(--tile-w);
   height: var(--tile-h);
@@ -461,13 +460,11 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-main);
-  font-size: var(--tile-font);
-  font-weight: 700;
   cursor: pointer;
   position: relative;
   flex-shrink: 0;
   user-select: none;
+  overflow: hidden;
   /* 厚實陰影 - 營造深度 */
   box-shadow:
     0 4px 0 rgba(0,0,0,0.25),
@@ -477,18 +474,24 @@ body {
   transition:
     transform var(--ease-fast),
     box-shadow var(--ease-fast);
-  /* 3D 厚牌效果 */
   border-bottom-width: 3px;
 }
 
-/* 牌面花紋線 */
-.tile::before {
-  content: '';
-  position: absolute;
-  inset: 3px;
-  border: 1px solid rgba(0,0,0,0.06);
-  border-radius: 2px;
+/* 瓷磚 SVG 圖片 */
+.tile-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
   pointer-events: none;
+}
+
+/* 文字 fallback（SVG載入失敗時） */
+.tile-text {
+  font-family: var(--font-main);
+  font-size: 1rem;
+  font-weight: 700;
+  color: #b52f2f;
 }
 
 /* 選中 / 摸到的牌 */
@@ -501,7 +504,8 @@ body {
     inset 0 -1px 0 rgba(0,0,0,0.08);
 }
 
-.tile.selected {
+.tile.selected,
+.tile.tile-selected {
   transform: translateY(-10px);
   box-shadow:
     0 10px 0 rgba(0,0,0,0.18),
@@ -511,7 +515,8 @@ body {
     inset 0 1px 0 rgba(255,255,255,0.9);
 }
 
-.tile.last-drawn {
+.tile.last-drawn,
+.tile.tile-last-drawn {
   box-shadow:
     0 4px 0 rgba(0,0,0,0.25),
     0 6px 12px rgba(0,0,0,0.45),
@@ -527,53 +532,54 @@ body {
 }
 
 /* ============================================
-   牌面字體顏色
-   ============================================ */
-.tile-wan { /* 萬 - 紅色 */
-  color: #b52f2f;
-  text-shadow: 0 1px 0 rgba(255,255,255,0.8), 0 0 4px rgba(181,47,47,0.2);
-}
-.tile-tong { /* 筒 - 藍色 */
-  color: #1a6fa8;
-  text-shadow: 0 1px 0 rgba(255,255,255,0.8), 0 0 4px rgba(26,111,168,0.2);
-}
-.tile-tiao { /* 索 - 綠色 */
-  color: #1e7a42;
-  text-shadow: 0 1px 0 rgba(255,255,255,0.8), 0 0 4px rgba(30,122,66,0.2);
-}
-.tile-honor { /* 字牌 - 深色 */
-  color: #2c2c2c;
-  text-shadow: 0 1px 0 rgba(255,255,255,0.6);
-}
-
-/* ============================================
-   牌背面 (.tile-back)
+   牌背面 (.tile-back) - 使用 SVG 圖片
    ============================================ */
 .tile-back {
   width: var(--tile-w);
   height: var(--tile-h);
   border-radius: var(--r-sm);
-  background:
-    repeating-linear-gradient(45deg, #2d5a3d 0px, #2d5a3d 6px, #1a3320 6px, #1a3320 12px);
+  background: repeating-linear-gradient(45deg, #2d5a3d 0px, #2d5a3d 6px, #1a3320 6px, #1a3320 12px);
   border: 1px solid #4a9965;
   box-shadow:
     0 3px 0 rgba(0,0,0,0.3),
     0 5px 10px rgba(0,0,0,0.4),
     inset 0 1px 0 rgba(255,255,255,0.1);
   flex-shrink: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tile-back .tile-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 /* 小牌 (捨牌區) */
 .tile-small {
-  width: 28px;
-  height: 38px;
-  font-size: 0.8rem;
+  width: 30px;
+  height: 41px;
   border-radius: 3px;
   box-shadow:
     0 2px 0 rgba(0,0,0,0.2),
     0 3px 6px rgba(0,0,0,0.35),
     inset 0 1px 0 rgba(255,255,255,0.9);
   flex-shrink: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(160deg, #fefcf8 0%, var(--tile-cream) 40%, var(--tile-cream-dark) 100%);
+  border: 1px solid var(--tile-border);
+}
+
+.tile-img-small {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 /* 碰/槓的面子展示 */

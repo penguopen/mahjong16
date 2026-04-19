@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="60" height="80" viewBox="0 0 60 80">
+<defs>
+    <linearGradient id="back_grad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#1a5c3a"/>
+        <stop offset="50%" stop-color="#0d3d24"/>
+        <stop offset="100%" stop-color="#1a5c3a"/>
+    </linearGradient>
+    <pattern id="back_pattern" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">
+        <rect width="10" height="10" fill="#0d3d24"/>
+        <circle cx="5" cy="5" r="3" fill="none" stroke="#2a8c5a" stroke-width="0.5"/>
+    </pattern>
+</defs>
+<!-- Shadow -->
+<rect x="2" y="3" width="56" height="75" rx="5" fill="#00000055"/>
+<!-- Tile base -->
+<rect x="1" y="1" width="56" height="75" rx="5" fill="url(#back_grad)" stroke="#0a5030" stroke-width="1.5"/>
+<!-- Pattern overlay -->
+<rect x="4" y="4" width="50" height="69" rx="3" fill="url(#back_pattern)" opacity="0.8"/>
+<!-- Center emblem -->
+<rect x="18" y="28" width="24" height="24" rx="3" fill="none" stroke="#4aba7a" stroke-width="1.5"/>
+<text x="30" y="46" text-anchor="middle" font-family="Noto Sans TC" font-size="14" fill="#4aba7a" font-weight="700">麻</text>
+<!-- Corner decorations -->
+<circle cx="10" cy="10" r="2" fill="#4aba7a" opacity="0.6"/>
+<circle cx="50" cy="10" r="2" fill="#4aba7a" opacity="0.6"/>
+<circle cx="10" cy="70" r="2" fill="#4aba7a" opacity="0.6"/>
+<circle cx="50" cy="70" r="2" fill="#4aba7a" opacity="0.6"/>
+</svg>

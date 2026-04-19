@@ -145,6 +145,7 @@ class MahjongGame {
     // 重置遊戲狀態
     this.gameState.isPlaying = true;
     this.gameState.currentPlayer = this.engine.dealer;
+    window.audioManager && window.audioManager.startBGM();
     this.gameState.selectedTileIndex = null;
     this.gameState.lastDrawnTile = null;
     this.gameState.isFirstDraw = true;
@@ -195,6 +196,7 @@ class MahjongGame {
     }
 
     const tile = this.engine.drawTile(0);
+    window.audioManager && window.audioManager.playDraw();
     console.log('[playerDraw] AFTER drawTile: handSize=' + this.engine.playerHands[0].length + ' drawnTile=' + tile);
     if (!tile) {
       this.handleGameOver();
@@ -224,6 +226,7 @@ class MahjongGame {
     if (this.gameState.selectedTileIndex === null) return;
     
     const tile = this.engine.discardTile(0, this.gameState.selectedTileIndex);
+    window.audioManager && window.audioManager.playDiscard();
     this.gameState.lastDrawnTile = null;
     this.gameState.selectedTileIndex = null;
     
@@ -250,6 +253,7 @@ class MahjongGame {
     if (!lastDiscard) return;
 
     if (this.engine.doPeng(0, lastDiscard)) {
+      window.audioManager && window.audioManager.playPong();
       console.log('[playerPon] AFTER doPeng: handSize=' + this.engine.playerHands[0].length);
       // 清除pending狀態
       this.gameState.pendingChiCombinations = [];
@@ -340,6 +344,7 @@ class MahjongGame {
   executeChi([tileA, tileB], discardTile) {
     console.log('[executeChi] BEFORE: handSize=' + this.engine.playerHands[0].length + ' tiles=' + tileA + ',' + discardTile + ',' + tileB);
     const success = this.engine.doChi(0, discardTile, tileA, tileB);
+    if (success) window.audioManager && window.audioManager.playPong();
     console.log('[executeChi] AFTER doChi: handSize=' + this.engine.playerHands[0].length + ' success=' + success);
     
     // 不管成功或失敗，都要清除pending狀態，避免遊戲卡住
@@ -392,6 +397,7 @@ class MahjongGame {
 
     if (this.engine.canKong(0, lastDiscard)) {
       this.engine.doKong(0, lastDiscard);
+      window.audioManager && window.audioManager.playKong();
       // 清除pending狀態
       this.gameState.pendingChiCombinations = [];
       this.gameState.hasPendingAction = false;
@@ -615,6 +621,7 @@ class MahjongGame {
    * 處理胡牌
    */
   handleWin(playerIndex, winTile, isSelfDraw) {
+    window.audioManager && window.audioManager.playWin();
     const hand = this.engine.playerHands[playerIndex];
     const melds = this.engine.meldRecords.filter(m => m.player === playerIndex);
     const playerWind = this.playerWinds[playerIndex];
@@ -665,6 +672,7 @@ class MahjongGame {
    * 處理遊戲結束
    */
   handleGameOver() {
+    window.audioManager && window.audioManager.stopBGM();
     this.gameState.isPlaying = false;
     this.gameState.hasPendingAction = false;
     this.gameState.waitingForPlayerResponse = false;
@@ -1035,18 +1043,37 @@ class MahjongGame {
   }
   
   /**
-   * 創建麻將牌 HTML
+   * 取得牌的 SVG 圖片 HTML
+   */
+  getTileSVG(tileId, cssClass = '') {
+    const TILE_SVG = {
+      1: 'tiles/wan_1.svg',   2: 'tiles/wan_2.svg',   3: 'tiles/wan_3.svg',
+      4: 'tiles/wan_4.svg',   5: 'tiles/wan_5.svg',   6: 'tiles/wan_6.svg',
+      7: 'tiles/wan_7.svg',   8: 'tiles/wan_8.svg',   9: 'tiles/wan_9.svg',
+      11: 'tiles/tong_1.svg', 12: 'tiles/tong_2.svg', 13: 'tiles/tong_3.svg',
+      14: 'tiles/tong_4.svg', 15: 'tiles/tong_5.svg', 16: 'tiles/tong_6.svg',
+      17: 'tiles/tong_7.svg', 18: 'tiles/tong_8.svg', 19: 'tiles/tong_9.svg',
+      21: 'tiles/tiao_1.svg', 22: 'tiles/tiao_2.svg', 23: 'tiles/tiao_3.svg',
+      24: 'tiles/tiao_4.svg', 25: 'tiles/tiao_5.svg', 26: 'tiles/tiao_6.svg',
+      27: 'tiles/tiao_7.svg', 28: 'tiles/tiao_8.svg', 29: 'tiles/tiao_9.svg',
+      31: 'tiles/dong.svg',  32: 'tiles/nan.svg',   33: 'tiles/xi.svg',
+      34: 'tiles/bei.svg',   35: 'tiles/zhong.svg', 36: 'tiles/fa.svg',
+      37: 'tiles/bai.svg',
+    };
+    const src = TILE_SVG[tileId];
+    if (!src) return `<span class="tile-text ${cssClass}">${this.getTileDisplay(tileId)}</span>`;
+    return `<img src="assets/${src}" alt="${this.getTileDisplay(tileId)}" class="tile-img ${cssClass}" loading="lazy">`;
+  }
+
+  /**
+   * 創建麻將牌 HTML（使用 SVG 瓷磚圖片）
    */
   createTileHTML(tile, isSelected = false, isLastDrawn = false, index = 0, isPlayer = true) {
-    const suit = this.engine.getSuit(tile);
-    const num = this.engine.getNumber(tile);
-    const suitClass = `tile-${suit}`;
-    const selectedClass = isSelected ? 'selected' : '';
-    const lastDrawnClass = isLastDrawn ? 'last-drawn' : '';
-    
-    return `<div class="tile ${suitClass} ${selectedClass} ${lastDrawnClass}" 
+    const selectedClass = isSelected ? 'tile-selected' : '';
+    const lastDrawnClass = isLastDrawn ? 'tile-last-drawn' : '';
+    return `<div class="tile ${selectedClass} ${lastDrawnClass}" 
                    data-index="${index}" data-tile="${tile}">
-      ${this.getTileDisplay(tile)}
+      ${this.getTileSVG(tile)}
     </div>`;
   }
   
@@ -1054,15 +1081,16 @@ class MahjongGame {
    * 創建背面麻將牌 HTML
    */
   createBackTileHTML() {
-    return `<div class="tile-back"></div>`;
+    return `<div class="tile-back">
+      <img src="assets/tiles/back.svg" alt="back" class="tile-img" loading="lazy">
+    </div>`;
   }
   
   /**
    * 創建小麻將牌 HTML
    */
   createSmallTileHTML(tile) {
-    const suit = this.engine.getSuit(tile);
-    return `<div class="tile-small tile-${suit}">${this.getTileDisplay(tile)}</div>`;
+    return `<div class="tile-small">${this.getTileSVG(tile, 'tile-img-small')}</div>`;
   }
   
   /**
