@@ -599,6 +599,17 @@ class MahjongGame {
    */
   nextPlayerTurn() {
     console.log('[nextPlayerTurn] currentPlayer=' + this.gameState.currentPlayer + ' waitingForPlayerResponse=' + this.gameState.waitingForPlayerResponse + ' hasPendingAction=' + this.gameState.hasPendingAction + ' skipAutoDraw=' + this.gameState.skipAutoDraw);
+    
+    // Auto-reject pending player-only actions when it's AI's turn
+    // This fixes the infinite loop where AI gets stuck because waitingForPlayerResponse=true
+    if (this.gameState.hasPendingAction && this.gameState.currentPlayer !== 0) {
+      console.log('[nextPlayerTurn] AI has pending player-only action, auto-rejecting');
+      this.gameState.pendingChiCombinations = [];
+      this.gameState.hasPendingAction = false;
+      this.gameState.waitingForPlayerResponse = false;
+      this.gameState.skipAutoDraw = false;
+    }
+    
     // 如果在等待玩家選擇行動，直接堵住（不透傳）
     if (this.gameState.waitingForPlayerResponse) {
       return;
@@ -618,6 +629,16 @@ class MahjongGame {
     if (this.engine.isGameOver()) {
       this.handleGameOver();
       return;
+    }
+    
+    // After switching player, check again if AI has pending player-only action and auto-clear
+    // This handles edge cases where pending action was set for an AI that couldn't act on it
+    if (this.gameState.hasPendingAction && this.gameState.currentPlayer !== 0) {
+      console.log('[nextPlayerTurn] AI after switch has pending player-only action, auto-rejecting');
+      this.gameState.pendingChiCombinations = [];
+      this.gameState.hasPendingAction = false;
+      this.gameState.waitingForPlayerResponse = false;
+      this.gameState.skipAutoDraw = false;
     }
     
     // 如果是玩家：檢查是否有pending的吃/碰/槓/胡選項
