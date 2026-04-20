@@ -14,11 +14,11 @@
    ============================================ */
 :root {
   /* 牌桌天鵝绒深綠 */
-  --felt-dark: #0a1f12;
-  --felt-green: #1a3320;
-  --felt-light: #2d5a3d;
-  --felt-highlight: #3d7a52;
-  --felt-shine: #4a9965;
+  --felt-dark: #1a3d1a;
+  --felt-green: #2d6a2d;
+  --felt-light: #3d8a3d;
+  --felt-highlight: #5cb85c;
+  --felt-shine: #7fcc7f;
 
   /* 胡桃木邊框 */
   --wood-dark: #1a0f0a;
@@ -45,9 +45,9 @@
   --btn-gold: #d4a843;
 
   /* 磨砂玻璃 */
-  --glass-bg: rgba(10, 20, 15, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.15);
-  --glass-shadow: rgba(0, 0, 0, 0.4);
+  --glass-bg: rgba(20, 50, 20, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-shadow: rgba(0, 0, 0, 0.3);
 
   /* 間距 */
   --sp-xs: 3px;
@@ -83,7 +83,7 @@ body {
   color: var(--text-bright);
   min-height: 100vh;
   overflow-x: hidden;
-  background: #050a06;
+  background: #0d2d0d;
   /* 防止選取抖動 */
   -webkit-tap-highlight-color: transparent;
 }
@@ -106,10 +106,10 @@ body {
   inset: 0;
   z-index: 0;
   background:
-    radial-gradient(ellipse 70% 40% at 50% 0%, rgba(74, 153, 101, 0.25) 0%, transparent 55%),
-    radial-gradient(ellipse 100% 60% at 50% 100%, rgba(10, 15, 10, 0.9) 0%, transparent 60%),
-    radial-gradient(circle at 50% 50%, transparent 20%, rgba(0,0,0,0.35) 100%),
-    linear-gradient(175deg, #0d2415 0%, #162e1c 25%, #1a3320 50%, #162e1c 75%, #0d2415 100%);
+    radial-gradient(ellipse 70% 40% at 50% 0%, rgba(74, 153, 101, 0.35) 0%, transparent 55%),
+    radial-gradient(ellipse 100% 60% at 50% 100%, rgba(10, 20, 10, 0.7) 0%, transparent 60%),
+    radial-gradient(circle at 50% 50%, transparent 20%, rgba(0,0,0,0.2) 100%),
+    linear-gradient(175deg, #1a4d1a 0%, #2d6a2d 25%, #3d8a3d 50%, #2d6a2d 75%, #1a4d1a 100%);
 }
 
 /* 天鵝绒織紋疊加 */
@@ -538,12 +538,12 @@ body {
   width: var(--tile-w);
   height: var(--tile-h);
   border-radius: var(--r-sm);
-  background: repeating-linear-gradient(45deg, #2d5a3d 0px, #2d5a3d 6px, #1a3320 6px, #1a3320 12px);
-  border: 1px solid #4a9965;
+  background: repeating-linear-gradient(45deg, #5cb85c 0px, #5cb85c 6px, #3d8a3d 6px, #3d8a3d 12px);
+  border: 1px solid #7fcc7f;
   box-shadow:
-    0 3px 0 rgba(0,0,0,0.3),
-    0 5px 10px rgba(0,0,0,0.4),
-    inset 0 1px 0 rgba(255,255,255,0.1);
+    0 3px 0 rgba(0,0,0,0.2),
+    0 5px 10px rgba(0,0,0,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.2);
   flex-shrink: 0;
   overflow: hidden;
   display: flex;
@@ -663,17 +663,20 @@ body {
   transform: translateY(0px) scale(0.97);
 }
 
-/* 開始 */
+/* 開始 - 高對比亮色版本 */
 .btn-start {
-  background: linear-gradient(135deg, var(--gold-accent), #c4963a);
-  color: #1a0f0a;
-  box-shadow: 0 4px 12px rgba(212,168,67,0.4);
+  background: linear-gradient(135deg, #f5d060, #d4a843);
+  color: #1a0800;
+  box-shadow: 0 4px 12px rgba(212,168,67,0.5), 0 0 20px rgba(212,168,67,0.2);
   font-size: 1rem;
+  font-weight: 900;
   padding: var(--sp-sm) var(--sp-xl);
+  letter-spacing: 0.05em;
 }
 .btn-start:not(:disabled):hover {
-  background: linear-gradient(135deg, var(--gold-bright), var(--gold-accent));
-  box-shadow: 0 6px 18px rgba(212,168,67,0.55);
+  background: linear-gradient(135deg, #ffe080, #e8c050);
+  box-shadow: 0 6px 20px rgba(255,200,80,0.7), 0 0 30px rgba(255,200,80,0.3);
+  color: #0d0400;
 }
 
 /* 摸牌 */
@@ -1014,8 +1017,40 @@ body {
   }
 
   .action-btn {
-    padding: var(--sp-xs) var(--sp-sm);
-    font-size: 0.8rem;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    min-height: 44px;
+    min-width: 52px;
+  }
+
+  /* 緊急按鈕（碰/吃/槓/胡）要更大 */
+  .btn-pon, .btn-chi, .btn-kan, .btn-hu {
+    min-height: 52px !important;
+    min-width: 60px !important;
+    font-size: 1rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.05em;
+  }
+
+  .btn-hu {
+    background: linear-gradient(135deg, #e74c3c, #c0392b) !important;
+    animation: huPulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes huPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(231,76,60,0.4); }
+    50% { box-shadow: 0 0 0 8px rgba(231,76,60,0); }
+  }
+
+  .chi-panel {
+    width: min(300px, 92vw);
+    padding: var(--sp-md);
+  }
+
+  .chi-option-btn {
+    padding: 12px 16px;
+    font-size: 1.2rem;
+    min-height: 52px;
   }
 }
 
