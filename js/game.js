@@ -152,14 +152,18 @@ class MahjongGame {
    * 開始遊戲
    */
   startGame() {
-    console.log('[startGame] called');
+    console.log('[startGame] called, isPlaying=', this.gameState.isPlaying);
     // 如果遊戲已在進行中，先彈出確認
     if (this.gameState.isPlaying) {
-      if (!confirm('遊戲仍在進行中！確定要重新開始嗎？')) return;
+      if (!confirm('遊戲仍在進行中！確定要重新開始嗎？')) {
+        console.log('[startGame] confirm cancelled, returning');
+        return;
+      }
     }
 
     // 一開始就禁用開始按鈕，防止遊戲中誤點
     this.ui.btnStart.disabled = true;
+    console.log('[startGame] btnStart disabled, proceeding');
 
     this.engine.reset();
 
