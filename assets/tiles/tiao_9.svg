@@ -1,12 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="60" height="80" viewBox="0 0 60 80">
-    
     <defs>
         <filter id="shadow" x="-10%" y="-10%" width="130%" height="140%">
             <feDropShadow dx="1" dy="2" stdDeviation="1.5" flood-color="#00000055"/>
         </filter>
-    </defs>
-    
-    <defs>
         <linearGradient id="face" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="#faf5ed"/>
             <stop offset="50%" stop-color="#f5f0e0"/>
@@ -25,7 +21,37 @@
     <rect x="3" y="2" width="52" height="4" rx="2" fill="rgba(255,255,255,0.4)"/>
     <!-- Suit color bar -->
     <rect x="6" y="10" width="48" height="3" rx="1" fill="#2980b9" opacity="0.85"/>
-    
+    <!-- Suit label -->
     <text x="30" y="22" text-anchor="middle" font-family="Noto Sans TC, sans-serif" font-size="11" fill="#2980b9" font-weight="700">條</text>
-    <text x="30" y="55" text-anchor="middle" font-family="Noto Sans TC, sans-serif" font-size="28" fill="#2980b9" font-weight="900">9</text><!-- Bamboo stripe --><rect x="27" y="65" width="6" height="8" rx="2" fill="#2980b9" opacity="0.5"/>
+    <!-- Bamboo sticks -->
+    <rect x="8" y="22" width="3.2" height="14" rx="1" fill="#2980b9"/>
+            <line x1="8" y1="28" x2="11.2" y2="28" stroke="#faf5ed" stroke-width="0.9"/>
+            <rect x="18" y="22" width="3.2" height="14" rx="1" fill="#2980b9"/>
+            <line x1="18" y1="28" x2="21.2" y2="28" stroke="#faf5ed" stroke-width="0.9"/>
+            <rect x="28" y="22" width="3.2" height="14" rx="1" fill="#2980b9"/>
+            <line x1="28" y1="28" x2="31.2" y2="28" stroke="#faf5ed" stroke-width="0.9"/>
+            <rect x="38" y="22" width="3.2" height="14" rx="1" fill="#2980b9"/>
+            <line x1="38" y1="28" x2="41.2" y2="28" stroke="#faf5ed" stroke-width="0.9"/>
+            <rect x="48" y="22" width="3.2" height="14" rx="1" fill="#2980b9"/>
+            <line x1="48" y1="28" x2="51.2" y2="28" stroke="#faf5ed" stroke-width="0.9"/>
+            <rect x="8" y="40" width="3.2" height="14" rx="1" fill="#2980b9"/>
+            <line x1="8" y1="46" x2="11.2" y2="46" stroke="#faf5ed" stroke-width="0.9"/>
+            <rect x="18" y="40" width="3.2" height="14" rx="1" fill="#2980b9"/>
+            <line x1="18" y1="46" x2="21.2" y2="46" stroke="#faf5ed" stroke-width="0.9"/>
+            <rect x="28" y="40" width="3.2" height="14" rx="1" fill="#2980b9"/>
+            <line x1="28" y1="46" x2="31.2" y2="46" stroke="#faf5ed" stroke-width="0.9"/>
+            <rect x="38" y="40" width="3.2" height="14" rx="1" fill="#2980b9"/>
+            <line x1="38" y1="46" x2="41.2" y2="46" stroke="#faf5ed" stroke-width="0.9"/>
+            <rect x="48" y="40" width="3.2" height="14" rx="1" fill="#2980b9"/>
+            <line x1="48" y1="46" x2="51.2" y2="46" stroke="#faf5ed" stroke-width="0.9"/>
+            <rect x="8" y="58" width="3.2" height="14" rx="1" fill="#2980b9"/>
+            <line x1="8" y1="64" x2="11.2" y2="64" stroke="#faf5ed" stroke-width="0.9"/>
+            <rect x="18" y="58" width="3.2" height="14" rx="1" fill="#2980b9"/>
+            <line x1="18" y1="64" x2="21.2" y2="64" stroke="#faf5ed" stroke-width="0.9"/>
+            <rect x="28" y="58" width="3.2" height="14" rx="1" fill="#2980b9"/>
+            <line x1="28" y1="64" x2="31.2" y2="64" stroke="#faf5ed" stroke-width="0.9"/>
+            <rect x="38" y="58" width="3.2" height="14" rx="1" fill="#2980b9"/>
+            <line x1="38" y1="64" x2="41.2" y2="64" stroke="#faf5ed" stroke-width="0.9"/>
+            <rect x="48" y="58" width="3.2" height="14" rx="1" fill="#2980b9"/>
+            <line x1="48" y1="64" x2="51.2" y2="64" stroke="#faf5ed" stroke-width="0.9"/>
 </svg>

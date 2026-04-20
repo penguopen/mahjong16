@@ -1,6 +1,6 @@
 # 🀄 麻雀 16 - 台灣正宗16張麻將
 
-線上遊玩：https://tokylin40.github.io/mahjong16
+線上遊玩：https://penguopen.github.io/mahjong16
 
 ## 功能（Phase 1）
 

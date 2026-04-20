@@ -100,16 +100,18 @@ body {
   overflow: hidden;
 }
 
-/* 深綠天鵝绒背景 - 提亮版 */
+/* ============================================
+   深綠天鵝绒背景 — 超明亮版
+   ============================================ */
 .table-surface {
   position: fixed;
   inset: 0;
   z-index: 0;
   background:
-    radial-gradient(ellipse 70% 40% at 50% 0%, rgba(74, 153, 101, 0.5) 0%, transparent 55%),
-    radial-gradient(ellipse 100% 60% at 50% 100%, rgba(20, 60, 20, 0.5) 0%, transparent 60%),
-    radial-gradient(circle at 50% 50%, rgba(100,160,100,0.15) 0%, rgba(0,0,0,0.1) 100%),
-    linear-gradient(175deg, #2a6a2a 0%, #3a8a3a 25%, #4a9a4a 50%, #3a8a3a 75%, #2a6a2a 100%);
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(110, 200, 110, 0.6) 0%, transparent 50%),
+    radial-gradient(ellipse 100% 60% at 50% 100%, rgba(60, 130, 60, 0.4) 0%, transparent 60%),
+    radial-gradient(circle at 50% 50%, rgba(140, 200, 140, 0.2) 0%, rgba(0,0,0,0.05) 100%),
+    linear-gradient(175deg, #3a8a3a 0%, #4a9a4a 30%, #5aaa5a 50%, #4a9a4a 70%, #3a8a3a 100%);
 }
 
 /* 天鵝绒織紋疊加 */
@@ -426,7 +428,9 @@ body {
 .tiles-container {
   display: flex;
   justify-content: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
   gap: 3px;
   padding: var(--sp-sm);
   background: rgba(0,0,0,0.3);
@@ -434,6 +438,9 @@ body {
   border-radius: var(--r-md);
   min-height: 64px;
   max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.3) transparent;
 }
 
 .meld-area {
@@ -1408,6 +1415,176 @@ body {
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
   border-bottom: 8px solid #ff6b00;
+}
+
+/* ================================================
+   Landscape Mobile CSS — 橫向手機
+   策略：game-area 改為 row 佈局，節省高度
+   ================================================ */
+@media (max-height: 500px) and (orientation: landscape) {
+  /* 遊戲容器：橫向模式 */
+  .game-container {
+    height: 100dvh !important;
+    overflow: hidden;
+  }
+
+  /* game-area 改為水平 row */
+  .game-area {
+    display: flex !important;
+    flex-direction: row !important;
+    flex: 1 1 0;
+    min-height: 0 !important;
+    overflow: hidden;
+    padding: 2px 4px !important;
+    gap: 2px;
+    max-height: calc(100dvh - 120px) !important;
+  }
+
+  /* info-bar: 極壓 */
+  .info-bar {
+    flex-shrink: 0;
+    padding: 2px 8px !important;
+    min-height: 24px;
+    font-size: 0.65rem !important;
+  }
+
+  /* AI-1, AI-2 放在左右兩側（垂直條） */
+  .table-middle {
+    display: contents;
+  }
+
+  .opponent-left,
+  .opponent-right {
+    flex: 0 0 40px !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .opponent-col .player-avatar {
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  .opponent-col .avatar-name,
+  .opponent-col .avatar-score,
+  .opponent-col .avatar-tiles-count {
+    font-size: 0.5rem !important;
+  }
+
+  /* AI-1, AI-2 手牌：旋轉90度顯示 */
+  .opponent-tiles-v {
+    transform: scale(0.55) rotate(90deg);
+    transform-origin: center;
+  }
+
+  /* 隱藏 AI-3（頂部對手）——節省垂直空間 */
+  .opponent-top {
+    display: none !important;
+  }
+
+  /* 中央區域：column 佈局 */
+  .central-widget {
+    flex: 0 0 auto;
+    transform: scale(0.45) !important;
+    margin: -10px 0 !important;
+  }
+
+  /* 牌池 + 資訊列 */
+  .table-discard-row {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow: hidden;
+    align-items: flex-end;
+  }
+
+  .discard-area {
+    max-height: 40px;
+    overflow: hidden;
+  }
+
+  .discard-tiles {
+    max-height: 30px;
+    overflow: hidden;
+  }
+
+  .wall-panel {
+    padding: 2px !important;
+    font-size: 0.6rem;
+  }
+
+  .wall-count {
+    font-size: 0.8rem !important;
+  }
+
+  /* 玩家手牌區 */
+  .hand-row {
+    flex: 1 1 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    overflow: hidden;
+  }
+
+  .hand-row .player-avatar {
+    flex-shrink: 0;
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  /* 手牌：保證可橫向滾動 */
+  .tiles-container {
+    flex: 1 1 0 !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    justify-content: flex-start !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    padding: 2px 4px !important;
+    gap: 2px !important;
+  }
+
+  .tile {
+    flex: 0 0 auto !important;
+    --tile-w: 36px;
+    --tile-h: 50px;
+    width: var(--tile-w) !important;
+    height: var(--tile-h) !important;
+    font-size: 0.7rem !important;
+  }
+
+  /* 動作區：固定可見 */
+  .action-area {
+    flex-shrink: 0 !important;
+    position: relative !important;
+    background: rgba(30, 90, 30, 0.97) !important;
+    border-top: 2px solid rgba(100, 200, 100, 0.4);
+    padding: 2px 6px !important;
+    max-height: 120px;
+    overflow: visible;
+  }
+
+  .game-status {
+    font-size: 0.65rem !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .action-buttons {
+    flex-wrap: wrap !important;
+    gap: 3px !important;
+    justify-content: center;
+  }
+
+  .action-btn {
+    font-size: 0.7rem !important;
+    padding: 4px 8px !important;
+    min-width: 40px !important;
+    min-height: 30px !important;
+  }
 }
 
 /* ================================================
