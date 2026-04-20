@@ -665,8 +665,9 @@ class MahjongGame {
         return;
       }
       this.gameState.lastDrawnTile = drawnTile;
+      this.gameState.selectedTileIndex = this.engine.playerHands[0].length - 1;
       this.renderHand(0);
-      this.enablePlayerActions();
+      this.enableOnlyDiscard(); // 自動摸牌後只准出牌，禁止再摸！
       this.updateStatus('請選擇要出的牌');
       // 檢查能否胡（玩家自摸）
       const winResult = this.engine.canWin(0);
