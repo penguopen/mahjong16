@@ -103,17 +103,27 @@ body {
 }
 
 /* ============================================
-   深綠天鵝绒背景 — 超明亮版
+   牌桌背景 — 明亮版
    ============================================ */
 .table-surface {
   position: fixed;
   inset: 0;
   z-index: 0;
-  background:
-    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(110, 200, 110, 0.6) 0%, transparent 50%),
-    radial-gradient(ellipse 100% 60% at 50% 100%, rgba(60, 130, 60, 0.4) 0%, transparent 60%),
-    radial-gradient(circle at 50% 50%, rgba(140, 200, 140, 0.2) 0%, rgba(0,0,0,0.05) 100%),
-    linear-gradient(175deg, #4aaa4a 0%, #5aba5a 30%, #6aca6a 50%, #5aba5a 70%, #4aaa4a 100%);
+  background: #5aba5a;
+}
+
+/* 木紋邊框 */
+.table-border {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  border: clamp(10px, 2.5vw, 24px) solid var(--wood-dark);
+  box-shadow:
+    inset 0 0 0 3px var(--wood-mid),
+    inset 0 0 0 5px var(--wood-grain),
+    inset 0 0 20px rgba(0,0,0,0.3),
+    0 0 40px rgba(0,0,0,0.4);
 }
 
 /* 天鵝绒織紋疊加 */
@@ -139,22 +149,8 @@ body {
 }
 
 /* ============================================
-   胡桃木邊框
+   木紋線 + 金線點綴
    ============================================ */
-.table-border {
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  border: clamp(10px, 2.5vw, 24px) solid var(--wood-dark);
-  box-shadow:
-    inset 0 0 0 3px var(--wood-mid),
-    inset 0 0 0 5px var(--wood-grain),
-    inset 0 0 40px rgba(0,0,0,0.6),
-    0 0 80px rgba(0,0,0,0.7);
-}
-
-/* 木紋線 */
 .table-border::before {
   content: '';
   position: absolute;
@@ -1421,10 +1417,10 @@ body {
 
 /* ================================================
    Landscape Mobile CSS — 橫向手機
-   策略：game-area 改為 row 佈局，節省高度
+   策略：game-area 保持 column，手牌固定在底部中央
    ================================================ */
-@media (max-height: 500px) and (orientation: landscape) {
-  /* 遊戲容器：橫向模式，強制充滿 viewport */
+@media (max-height: 580px), (orientation: landscape) {
+  /* 重置全域 */
   html, body {
     height: 100%;
     overflow: hidden;
@@ -1432,152 +1428,163 @@ body {
     padding: 0 !important;
   }
 
+  /* 遊戲容器：固定充滿 viewport */
   .game-container {
-    height: 100dvh !important;
-    width: 100%;
+    height: 100vh !important;
+    width: 100vw !important;
     overflow: hidden;
   }
 
-  /* game-area 改為水平 row */
+  /* game-area: 保持 column stack，置中 */
   .game-area {
     display: flex !important;
-    flex-direction: row !important;
+    flex-direction: column !important;
+    justify-content: space-between;
     flex: 1 1 0;
     min-height: 0 !important;
     overflow: hidden;
-    padding: 2px 4px !important;
-    gap: 2px;
-    max-height: calc(100dvh - 120px) !important;
+    padding: 0 !important;
   }
 
   /* info-bar: 極壓 */
   .info-bar {
     flex-shrink: 0;
     padding: 2px 8px !important;
-    min-height: 24px;
-    font-size: 0.65rem !important;
+    min-height: 28px;
+    font-size: 0.7rem !important;
+    background: rgba(90,170,90,0.85) !important;
   }
 
-  /* AI-1, AI-2 放在左右兩側（垂直條） */
-  .table-middle {
-    display: contents;
+  /* AI-3 頂部列：顯示，但壓縮 */
+  .opponent-top {
+    flex-shrink: 0;
+    display: flex !important;
+    justify-content: center;
+    gap: 4px;
+    padding: 2px 4px;
+    background: rgba(70,150,70,0.7);
+    min-height: 40px;
   }
 
-  .opponent-left,
-  .opponent-right {
-    flex: 0 0 40px !important;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow: hidden;
-  }
-
-  .opponent-col .player-avatar {
-    width: 36px !important;
-    height: 36px !important;
-  }
-
-  .opponent-col .avatar-name,
-  .opponent-col .avatar-score,
-  .opponent-col .avatar-tiles-count {
-    font-size: 0.5rem !important;
-  }
-
-  /* AI-1, AI-2 手牌：旋轉90度顯示 */
-  .opponent-tiles-v {
-    transform: scale(0.55) rotate(90deg);
+  .opponent-top .player-avatar {
+    transform: scale(0.7);
     transform-origin: center;
   }
 
-  /* 隱藏 AI-3（頂部對手）——節省垂直空間 */
-  .opponent-top {
+  .opponent-top .opponent-tiles-h {
+    transform: scale(0.6);
+    transform-origin: center;
+  }
+
+  /* 中間區域：row 排列 */
+  .table-middle {
+    display: flex !important;
+    flex-direction: row !important;
+    flex: 1 1 0;
+    min-height: 0;
+    overflow: hidden;
+    align-items: stretch;
+  }
+
+  /* 對手：隱藏（節省空間） */
+  .opponent-left,
+  .opponent-right {
     display: none !important;
   }
 
-  /* 中央區域：column 佈局 */
+  /* 中央墊 */
   .central-widget {
-    flex: 0 0 auto;
-    transform: scale(0.45) !important;
-    margin: -10px 0 !important;
+    flex: 1 1 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 0;
   }
 
-  /* 牌池 + 資訊列 */
+  /* 牌池 + 牆：水平排列在中央上方 */
   .table-discard-row {
-    flex: 1 1 0;
-    min-height: 0;
-    overflow: hidden;
-    align-items: flex-end;
+    flex-shrink: 0;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 12px;
+    padding: 2px 8px;
+    min-height: 44px;
+    background: rgba(80,160,80,0.7) !important;
   }
 
   .discard-area {
-    max-height: 40px;
-    overflow: hidden;
-  }
-
-  .discard-tiles {
-    max-height: 30px;
-    overflow: hidden;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 2px 8px;
   }
 
   .wall-panel {
-    padding: 2px !important;
-    font-size: 0.6rem;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 2px 8px;
   }
 
-  .wall-count {
-    font-size: 0.8rem !important;
-  }
-
-  /* 玩家手牌區 */
+  /* 玩家手牌區：水平排列，置中 */
   .hand-row {
-    flex: 1 1 0;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    overflow: hidden;
+    flex-shrink: 0;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-end !important;
+    justify-content: center !important;
+    gap: 4px;
+    padding: 2px 8px 4px !important;
+    min-height: 60px;
+    background: rgba(80,160,80,0.8) !important;
   }
 
   .hand-row .player-avatar {
-    flex-shrink: 0;
-    width: 36px !important;
-    height: 36px !important;
+    display: none !important;
   }
 
-  /* 手牌：保證可橫向滾動 */
+  .meld-area {
+    flex-shrink: 0;
+  }
+
+  /* 手牌 tiles：置中，可橫向滾動 */
   .tiles-container {
-    flex: 1 1 0 !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
     overflow-x: auto !important;
     overflow-y: hidden !important;
     justify-content: flex-start !important;
-    min-height: 0 !important;
-    max-height: none !important;
+    align-items: flex-end !important;
+    gap: 2px;
     padding: 2px 4px !important;
-    gap: 2px !important;
+    min-height: 0;
+    max-height: none !important;
+    -webkit-overflow-scrolling: touch;
   }
 
+  /* Tile 尺寸 */
   .tile {
     flex: 0 0 auto !important;
-    --tile-w: 36px;
-    --tile-h: 50px;
+    --tile-w: 42px;
+    --tile-h: 58px;
     width: var(--tile-w) !important;
     height: var(--tile-h) !important;
-    font-size: 0.7rem !important;
   }
 
   /* 動作區：固定可見 */
   .action-area {
     flex-shrink: 0 !important;
-    position: relative !important;
-    background: rgba(30, 90, 30, 0.97) !important;
-    border-top: 2px solid rgba(100, 200, 100, 0.4);
-    padding: 2px 6px !important;
-    max-height: 120px;
+    background: rgba(60,130,60,0.95) !important;
+    border-top: 2px solid rgba(120,220,120,0.4) !important;
+    padding: 3px 6px !important;
+    max-height: 90px;
     overflow: visible;
   }
 
   .game-status {
-    font-size: 0.65rem !important;
+    font-size: 0.7rem !important;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1585,15 +1592,15 @@ body {
 
   .action-buttons {
     flex-wrap: wrap !important;
-    gap: 3px !important;
+    gap: 4px !important;
     justify-content: center;
   }
 
   .action-btn {
-    font-size: 0.7rem !important;
-    padding: 4px 8px !important;
-    min-width: 40px !important;
-    min-height: 30px !important;
+    font-size: 0.75rem !important;
+    padding: 5px 10px !important;
+    min-width: 44px !important;
+    min-height: 34px !important;
   }
 }
 
