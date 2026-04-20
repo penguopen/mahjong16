@@ -10,6 +10,7 @@ class AudioManager {
     this.bgmSource = null;
     this.bgmPlaying = false;
     this.enabled = true;
+    this.bgmAudio = null;
   }
 
   init() {
@@ -139,18 +140,35 @@ class AudioManager {
     }, 500);
   }
 
-  // 背景音樂 - 舒緩的中國風旋律循環
+  // MP3 BGM 播放器
+  loadBGMMp3(url) {
+    if (!url) return false;
+    this.bgmAudio = new Audio(url);
+    this.bgmAudio.loop = true;
+    this.bgmAudio.volume = 0.25; // 使用現有的 bgmGain 控制
+    return true;
+  }
+
+  // 背景音樂 - MiniMax AI 生成 + MP3 BGM fallback
   startBGM() {
     if (!this.ctx) this.init();
     this.resume();
     if (this.bgmPlaying) return;
     this.bgmPlaying = true;
-    this._playBGMLoop();
+    
+    // 嘗試載入 MP3 BGM
+    if (this.loadBGMMp3('/assets/bgm.mp3')) {
+      this.bgmAudio.play().catch(e => {
+        console.warn('[Audio] BGM play failed, fallback to synth:', e);
+        this._playBGMLoop();
+      });
+    } else {
+      this._playBGMLoop();
+    }
   }
 
   _playBGMLoop() {
     if (!this.bgmPlaying || !this.ctx) return;
-    // 五聲音階旋律片段
     const scale = [262, 294, 330, 392, 440, 523, 587, 659];
     const patterns = [
       [0,2,4,2], [2,4,5,4], [4,5,7,5], [5,7,4,5],
@@ -177,13 +195,18 @@ class AudioManager {
       time += beatDur;
     });
 
-    // 4拍後重複
     const loopDur = pattern.length * beatDur * 1000;
     setTimeout(() => this._playBGMLoop(), loopDur);
   }
 
   stopBGM() {
     this.bgmPlaying = false;
+    if (this.bgmAudio) { 
+      this.bgmAudio.pause(); 
+      this.bgmAudio.currentTime = 0; 
+      this.bgmAudio = null;
+    }
+    // 同時停用合成
     if (this.bgmSource) { try { this.bgmSource.stop(); } catch(e){} }
   }
 
