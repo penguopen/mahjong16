@@ -799,6 +799,13 @@ class MahjongGame {
           const index = parseInt(e.currentTarget.dataset.index);
           this.selectTile(index);
         });
+        tileEl.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            const index = parseInt(e.currentTarget.dataset.index);
+            this.selectTile(index);
+          }
+        });
       });
     } else {
       // AI 手牌（只顯示背面，按 originalIndex 順序）
@@ -1223,8 +1230,8 @@ class MahjongGame {
   createTileHTML(tile, isSelected = false, isLastDrawn = false, index = 0, isPlayer = true) {
     const selectedClass = isSelected ? 'tile-selected' : '';
     const lastDrawnClass = isLastDrawn ? 'tile-last-drawn' : '';
-    return `<div class="tile ${selectedClass} ${lastDrawnClass}" 
-                   data-index="${index}" data-tile="${tile}">
+    return `<div class="tile ${selectedClass} ${lastDrawnClass}"
+                   data-index="${index}" data-tile="${tile}" tabindex="0">
       ${this.getTileSVG(tile)}
     </div>`;
   }

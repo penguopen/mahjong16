@@ -520,6 +520,22 @@ body {
     inset 0 1px 0 rgba(255,255,255,0.9);
 }
 
+.tile:focus {
+  outline: none;
+  box-shadow:
+    0 6px 0 rgba(0,0,0,0.22),
+    0 10px 20px rgba(0,0,0,0.4),
+    0 0 0 3px #ff6b00,
+    0 0 16px rgba(255,107,0,0.5) !important;
+  transform: translateY(-6px);
+  z-index: 10;
+}
+
+.tile:focus-visible {
+  outline: 2px solid #ff6b00;
+  outline-offset: 2px;
+}
+
 .tile.last-drawn,
 .tile.tile-last-drawn {
   box-shadow:
