@@ -75,15 +75,17 @@
 /* ============================================
    重置
    ============================================ */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
 html { font-size: 16px; -webkit-text-size-adjust: 100%; }
 
 body {
   font-family: var(--font-main);
   color: var(--text-bright);
-  min-height: 100vh;
+  min-height: 100dvh;
   overflow-x: hidden;
-  background: #2a5a2a;
+  margin: 0;
+  background: #4a8a4a; /* 明亮背景 */
   /* 防止選取抖動 */
   -webkit-tap-highlight-color: transparent;
 }
@@ -111,7 +113,7 @@ body {
     radial-gradient(ellipse 80% 50% at 50% 0%, rgba(110, 200, 110, 0.6) 0%, transparent 50%),
     radial-gradient(ellipse 100% 60% at 50% 100%, rgba(60, 130, 60, 0.4) 0%, transparent 60%),
     radial-gradient(circle at 50% 50%, rgba(140, 200, 140, 0.2) 0%, rgba(0,0,0,0.05) 100%),
-    linear-gradient(175deg, #3a8a3a 0%, #4a9a4a 30%, #5aaa5a 50%, #4a9a4a 70%, #3a8a3a 100%);
+    linear-gradient(175deg, #4aaa4a 0%, #5aba5a 30%, #6aca6a 50%, #5aba5a 70%, #4aaa4a 100%);
 }
 
 /* 天鵝绒織紋疊加 */
@@ -1422,9 +1424,17 @@ body {
    策略：game-area 改為 row 佈局，節省高度
    ================================================ */
 @media (max-height: 500px) and (orientation: landscape) {
-  /* 遊戲容器：橫向模式 */
+  /* 遊戲容器：橫向模式，強制充滿 viewport */
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
   .game-container {
     height: 100dvh !important;
+    width: 100%;
     overflow: hidden;
   }
 
