@@ -153,12 +153,9 @@ class MahjongGame {
    */
   startGame() {
     console.log('[startGame] called, isPlaying=', this.gameState.isPlaying);
-    // 如果遊戲已在進行中，先彈出確認
+    // 如果遊戲已在進行中，直接重置（按鈕點擊本身就是確認）
     if (this.gameState.isPlaying) {
-      if (!confirm('遊戲仍在進行中！確定要重新開始嗎？')) {
-        console.log('[startGame] confirm cancelled, returning');
-        return;
-      }
+      console.log('[startGame] isPlaying=true, force resetting game');
     }
 
     // 一開始就禁用開始按鈕，防止遊戲中誤點
