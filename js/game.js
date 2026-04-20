@@ -102,6 +102,8 @@ class MahjongGame {
       // New casino UI elements
       ledTimer: document.getElementById('ledTimer'),
       dirEast: document.getElementById('dirEast'),
+      basePrice: document.getElementById('basePrice'),
+      taiPrice: document.getElementById('taiPrice'),
       dirSouth: document.getElementById('dirSouth'),
       dirWest: document.getElementById('dirWest'),
       dirNorth: document.getElementById('dirNorth'),
@@ -1045,6 +1047,10 @@ class MahjongGame {
     // 更新分數顯示
     this.scores = [this.settings.initialScore, this.settings.initialScore, this.settings.initialScore, this.settings.initialScore];
     this.updateScoreDisplay();
+    
+    // 更新底/台價格顯示
+    if (this.ui.basePrice) this.ui.basePrice.textContent = this.settings.baseScore;
+    if (this.ui.taiPrice) this.ui.taiPrice.textContent = this.settings.fanScore;
     
     this.closeSettings();
     this.showToast('設定已儲存');
