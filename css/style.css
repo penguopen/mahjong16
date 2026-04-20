@@ -45,8 +45,8 @@
   --btn-gold: #d4a843;
 
   /* 磨砂玻璃 */
-  --glass-bg: rgba(20, 50, 20, 0.75);
-  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-bg: rgba(30, 80, 30, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.3);
   --glass-shadow: rgba(0, 0, 0, 0.3);
 
   /* 間距 */
@@ -83,7 +83,7 @@ body {
   color: var(--text-bright);
   min-height: 100vh;
   overflow-x: hidden;
-  background: #0d2d0d;
+  background: #2a5a2a;
   /* 防止選取抖動 */
   -webkit-tap-highlight-color: transparent;
 }
@@ -100,16 +100,16 @@ body {
   overflow: hidden;
 }
 
-/* 深綠天鵝绒背景 */
+/* 深綠天鵝绒背景 - 提亮版 */
 .table-surface {
   position: fixed;
   inset: 0;
   z-index: 0;
   background:
-    radial-gradient(ellipse 70% 40% at 50% 0%, rgba(74, 153, 101, 0.35) 0%, transparent 55%),
-    radial-gradient(ellipse 100% 60% at 50% 100%, rgba(10, 20, 10, 0.7) 0%, transparent 60%),
-    radial-gradient(circle at 50% 50%, transparent 20%, rgba(0,0,0,0.2) 100%),
-    linear-gradient(175deg, #1a4d1a 0%, #2d6a2d 25%, #3d8a3d 50%, #2d6a2d 75%, #1a4d1a 100%);
+    radial-gradient(ellipse 70% 40% at 50% 0%, rgba(74, 153, 101, 0.5) 0%, transparent 55%),
+    radial-gradient(ellipse 100% 60% at 50% 100%, rgba(20, 60, 20, 0.5) 0%, transparent 60%),
+    radial-gradient(circle at 50% 50%, rgba(100,160,100,0.15) 0%, rgba(0,0,0,0.1) 100%),
+    linear-gradient(175deg, #2a6a2a 0%, #3a8a3a 25%, #4a9a4a 50%, #3a8a3a 75%, #2a6a2a 100%);
 }
 
 /* 天鵝绒織紋疊加 */
@@ -604,7 +604,11 @@ body {
   flex-direction: column;
   align-items: center;
   gap: var(--sp-sm);
-  padding: var(--sp-sm);
+  padding: var(--sp-md);
+  background: rgba(30, 90, 30, 0.92);
+  border-top: 2px solid rgba(100, 200, 100, 0.3);
+  position: relative;
+  z-index: 20;
 }
 
 .game-status {
@@ -663,20 +667,27 @@ body {
   transform: translateY(0px) scale(0.97);
 }
 
-/* 開始 - 高對比亮色版本 */
+/* 開始 - 超高對比亮色版 */
 .btn-start {
-  background: linear-gradient(135deg, #f5d060, #d4a843);
-  color: #1a0800;
-  box-shadow: 0 4px 12px rgba(212,168,67,0.5), 0 0 20px rgba(212,168,67,0.2);
-  font-size: 1rem;
-  font-weight: 900;
-  padding: var(--sp-sm) var(--sp-xl);
+  background: linear-gradient(135deg, #ffe066, #ffcc00) !important;
+  color: #1a0500 !important;
+  box-shadow: 0 4px 16px rgba(255,200,0,0.6), 0 0 30px rgba(255,200,0,0.3);
+  font-size: 1.1rem !important;
+  font-weight: 900 !important;
+  padding: 12px 28px !important;
   letter-spacing: 0.05em;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-radius: 10px;
 }
 .btn-start:not(:disabled):hover {
-  background: linear-gradient(135deg, #ffe080, #e8c050);
-  box-shadow: 0 6px 20px rgba(255,200,80,0.7), 0 0 30px rgba(255,200,80,0.3);
-  color: #0d0400;
+  background: linear-gradient(135deg, #fff070, #ffd010) !important;
+  box-shadow: 0 6px 24px rgba(255,210,0,0.8), 0 0 40px rgba(255,210,0,0.4);
+  color: #0d0300 !important;
+}
+.btn-start:disabled {
+  background: linear-gradient(135deg, #888, #666) !important;
+  color: #ccc !important;
+  opacity: 0.7 !important;
 }
 
 /* 摸牌 */
