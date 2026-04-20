@@ -146,6 +146,32 @@ class MahjongGame {
     // AI 分析面板
     this.ui.btnCloseAnalysis.addEventListener('click', () => this.closeAnalysis());
     this.ui.btnChiCancel.addEventListener('click', () => this.hideChiUI());
+
+    // 鍵盤快速鍵：數字鍵 1-9, 0, q=10, w=11, e=12, r=13, t=14, y=15, u=16 選擇手牌
+    document.addEventListener('keydown', (e) => {
+      if (this.gameState.currentPlayer !== 0 || !this.gameState.isPlaying) return;
+      // 忽略正在輸入的欄位
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      const keyMap = { '1':0,'2':1,'3':2,'4':3,'5':4,'6':5,'7':6,'8':7,'9':8,'0':9,'q':10,'w':11,'e':12,'r':13,'t':14,'y':15,'u':16 };
+      const idx = keyMap[e.key.toLowerCase()];
+      if (idx !== undefined) {
+        const hand = this.engine.playerHands[0];
+        if (idx < hand.length) {
+          this.selectTile(idx);
+          // Enter 或 Space = 出一費选中的牌
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            if (this.gameState.selectedTileIndex !== null) {
+              this.playerDiscard();
+            }
+          }
+        }
+      }
+      // 快速摸牌: d 鍵
+      if (e.key.toLowerCase() === 'd' && !this.ui.btnDraw.disabled) {
+        this.playerDraw();
+      }
+    });
   }
   
   /**
