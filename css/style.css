@@ -1412,137 +1412,155 @@ body {
 
 /* ================================================
    Mobile Responsive - 確保按鈕區可見
+   核心策略：遊戲區 max-height 限制 + 各區塊 flex-shrink
    ================================================ */
-@media (max-height: 700px), (max-width: 600px) {
+@media (max-width: 600px) {
+  /* 遊戲容器：固定高度，超過就overflow */
   .game-container {
-    min-height: 100dvh;
+    height: 100dvh;
+    min-height: 0;
     overflow: hidden;
   }
 
-  /* 遊戲區域自適應 */
+  /* 遊戲區域：flex-shrink: 1，讓它可以被壓縮 */
   .game-area {
-    flex: 1 1 auto;
-    min-height: 0; /* 允許壓縮 */
-    overflow: hidden;
+    flex: 1 1 0 !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
     display: flex;
     flex-direction: column;
+    padding: 2px 4px !important;
+    gap: 2px;
+    /* 關鍵：max-height 限制 */
+    max-height: calc(100dvh - 130px) !important;
   }
 
-  /* 對手區域壓縮 */
+  /* 資訊列：極度壓縮 */
+  .info-bar {
+    flex-shrink: 0;
+    padding: 2px 8px !important;
+    font-size: 0.7rem !important;
+    min-height: 24px;
+    gap: 4px;
+  }
+
+  .info-value {
+    font-size: 0.7rem !important;
+  }
+
+  /* 對手區：垂直壓縮 */
   .opponent-row {
-    flex: 0 0 auto;
+    flex-shrink: 0;
   }
 
   .opponent-area {
-    padding: 4px 8px;
+    padding: 2px 4px !important;
   }
 
   .opponent-tiles {
-    transform: scale(0.75);
+    transform: scale(0.6) !important;
     transform-origin: center;
   }
 
   .opponent-avatar {
-    width: 36px;
-    height: 36px;
-    font-size: 1rem;
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 0.8rem !important;
   }
 
-  .opponent-name {
-    font-size: 0.6rem;
-  }
-
+  .opponent-name,
   .opponent-score {
-    font-size: 0.55rem;
+    font-size: 0.5rem !important;
   }
 
-  /* 中央墊區壓縮 */
+  .avatar-score,
+  .avatar-tiles-count {
+    font-size: 0.5rem !important;
+  }
+
+  /* 中央墊區：壓縮到最小 */
   .center-widget {
-    flex: 0 0 auto;
-    transform: scale(0.7);
+    flex-shrink: 0;
+    transform: scale(0.5) !important;
     transform-origin: center;
-    margin: 0;
-  }
-
-  /* 玩家手牌區 - 關鍵修復 */
-  .player-area {
-    flex: 0 0 auto; /* 不額外伸展 */
+    margin: 0 !important;
     min-height: 0;
-    padding: 4px 8px 8px;
   }
 
-  /* 手牌容器 - 可橫向滾動 */
+  .round-info,
+  .wall-info {
+    font-size: 0.6rem !important;
+  }
+
+  /* 玩家手牌區：flex-shrink: 1 */
+  .player-area {
+    flex-shrink: 1;
+    min-height: 0;
+    padding: 2px 4px 4px !important;
+    overflow: hidden;
+  }
+
+  /* 手牌容器：可橫向滾動，設 max-height */
   .tiles-container {
-    overflow-x: auto;
-    overflow-y: hidden;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
     -webkit-overflow-scrolling: touch;
     justify-content: flex-start;
     gap: 2px;
-    padding: 4px 8px;
-    max-height: 110px;
+    padding: 2px 4px !important;
+    max-height: 90px !important;
+    min-height: 50px;
   }
 
+  /* 手牌：使用 media query 的 tile 尺寸 */
   .tile {
     flex: 0 0 auto;
-    width: var(--tile-w, 44px);
-    height: var(--tile-h, 62px);
+    /* tile CSS 變數在各自的 media query 中定義 */
   }
 
-  /* 資訊列壓縮 */
-  .info-bar {
-    flex-shrink: 0;
-    padding: 4px 10px;
-    font-size: 0.75rem;
-  }
-
-  .info-left, .info-right {
-    font-size: 0.7rem;
-  }
-
-  /* 按鈕區 - 固定在底部，永遠可見 */
+  /* 按鈕區：固定在底部，永遠可見 */
   .action-area {
-    flex-shrink: 0;
-    position: relative;
+    flex-shrink: 0 !important;
+    position: relative !important;
     z-index: 20;
-    background: rgba(30, 90, 30, 0.97);
+    background: rgba(30, 90, 30, 0.97) !important;
     border-top: 2px solid rgba(100, 200, 100, 0.4);
-    padding: 6px 8px;
+    padding: 4px 6px !important;
+    max-height: 130px;
+    overflow: visible;
   }
 
   .game-status {
-    font-size: 0.75rem;
-    padding: 2px 0 4px;
+    font-size: 0.7rem !important;
+    padding: 1px 0 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .action-buttons {
-    flex-wrap: wrap;
-    gap: 6px;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
     justify-content: center;
   }
 
   .action-btn {
-    font-size: 0.8rem;
-    padding: 6px 12px;
-    min-width: 50px;
-  }
-}
-
-/* 針對非常小的螢幕額外壓縮 */
-@media (max-height: 550px) {
-  .tile {
-    width: 38px !important;
-    height: 54px !important;
+    font-size: 0.75rem !important;
+    padding: 5px 10px !important;
+    min-width: 44px !important;
+    min-height: 34px !important;
   }
 
-  .tiles-container {
-    max-height: 90px;
+  /* 緊急按鈕稍大 */
+  .btn-pon, .btn-chi, .btn-kan, .btn-hu {
+    min-height: 38px !important;
+    min-width: 48px !important;
+    font-size: 0.8rem !important;
   }
 
-  .center-widget {
-    transform: scale(0.5);
-  }
-
-  .opponent-tiles {
-    transform: scale(0.6);
+  /* 吃牌面板在手機上 */
+  .chi-panel {
+    width: 95vw !important;
+    max-width: 320px;
   }
 }
